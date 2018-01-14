@@ -2,6 +2,7 @@ from django.shortcuts import render
 
 
 class Auth:
+    """Auth classes action"""
 
     @staticmethod
     def index_action(request):
@@ -25,4 +26,5 @@ class Auth:
 
 
 class Channel:
+    """Channel classes actions"""
     pass
