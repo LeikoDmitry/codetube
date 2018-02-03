@@ -128,3 +128,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'assets'),
 ]
+
+EMAIL_HOST = 'smtp.mailtrap.io'
+EMAIL_HOST_USER = '45ef2d25198231'
+EMAIL_HOST_PASSWORD = 'abaa101e5c9e9d'
+EMAIL_PORT = '2525'
