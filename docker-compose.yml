@@ -6,7 +6,7 @@ services:
         ports:
             - 3306:3306
         volumes:
-            - .data/mysql:/var/lib/mysql
+            - ./data/mysql:/var/lib/mysql
         environment:
             MYSQL_ROOT_PASSWORD: codetube
             MYSQL_USER: dmitry
@@ -14,8 +14,8 @@ services:
             MYSQL_DATABASE: codetube
     python:
         build: python
-        command: python3 manage.py runserver 0.0.0.0:8000
-        #command: uwsgi --socket :8001 --module src.wsgi
+        #command: python3 manage.py runserver 0.0.0.0:8000
+        command: uwsgi --socket :8001 --module src.wsgi
         volumes:
             - .:/codetube
         ports:
@@ -27,7 +27,7 @@ services:
     nginx:
         build: nginx
         links:
-          - python:8001
+          - python
         ports:
             - 80:80
         volumes:
