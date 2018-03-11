@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Main page{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Setting channel:</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" method="POST" action="{% url 'tube:channel_edit' my_channel.slug %}">
+                            {% csrf_token %}
+                            <div class="form-group {% if error.name %}has-error{% endif %}">
+                                <label for="name" class="col-md-4 control-label">Name</label>
+                                <div class="col-md-6">
+                                    <input id="name" class="form-control" name="name" value="{{ my_channel.name }}"
+                                           required>
+                                    {% if error.name %}
+                                        {% for error in error.name %}
+                                            <span class="help-block">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group {% if error.slug %}has-error{% endif %}">
+                                <label for="slug" class="col-md-4 control-label">Unique url</label>
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">http://{{ host }}/channel/</div>
+                                        <input id="slug" class="form-control" name="slug" value="{{ my_channel.slug }}"
+                                               required>
+                                    </div>
+                                    {% if error.slug %}
+                                        {% for error in error.slug %}
+                                            <span class="help-block">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="form-group {% if error.description %}has-error{% endif %}">
+                                <label for="description" class="col-md-4 control-label">Description</label>
+                                <div class="col-md-6">
+                                    <textarea name="description" class="form-control"
+                                              id="description">{{ my_channel.description | escape }}</textarea>
+                                </div>
+                                {% if error.description %}
+                                    {% for error in error.description %}
+                                        <span class="help-block">{{ error }}</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        Update channel
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
