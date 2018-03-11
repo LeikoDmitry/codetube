@@ -7,7 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
-from app.forms.form import UserRegistrationForm, ResetForm
+from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm
 from app.models import Token, Channel
 import uuid
 
@@ -18,10 +18,7 @@ class Auth:
     @staticmethod
     @login_required(login_url='/login')
     def index_action(request):
-        channel = Channel.objects.get(users=request.user)
-        return render(request, 'app/index.html', {
-            'channel': channel
-        })
+        return render(request, 'app/index.html')
 
     @staticmethod
     def login_action(request):
@@ -68,7 +65,7 @@ class Auth:
                 if user_created:
                     Channel.objects.create(
                         name=form.cleaned_data['channel_name'],
-                        slug=uuid.uuid4().hex[:7],
+                        slug=uuid.uuid4().hex(),
                         users=user_created
                     )
                     user_login = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
@@ -88,7 +85,7 @@ class Auth:
                 return redirect('tube:index')
             except User.DoesNotExist:
                 return redirect('tube:reset')
-        if 'code' in request.POST:
+        if 'code' in request.GET:
             try:
                 token = Token.objects.get(value=request.GET['code'])
                 return render(request, 'app/reset.html', {'token': token})
@@ -137,3 +134,35 @@ class Auth:
         logout(request)
         return redirect('tube:login')
 
+
+class ChannelPages:
+
+    @staticmethod
+    @login_required(login_url='/login')
+    def setting_action(request, channel):
+        my_channel = Channel.objects.get(users=request.user, slug=channel)
+        if 'error' in request.session:
+            error = request.session['error']
+            del request.session['error']
+        else:
+            error = ""
+        return render(request, 'app/channel_edit.html', {
+            'my_channel': my_channel,
+            'host': request.get_host(),
+            'error': error
+        })
+
+    @staticmethod
+    @login_required(login_url='/login')
+    def edit_action(request, channel):
+        if request.method == 'POST':
+            my_channel = Channel.objects.get(users=request.user, slug=channel)
+            form = UpdateChannelForm(request.POST, instance=my_channel)
+            if form.is_valid():
+                form.save()
+                return redirect('tube:channel_setting', channel=my_channel.slug)
+            else:
+                request.session['error'] = form.errors
+                return redirect('tube:channel_setting', channel=my_channel.slug)
+        else:
+            return redirect('tube:index')

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django import forms
+from app.models import Channel
 
 
 class UserRegistrationForm(forms.ModelForm):
@@ -36,6 +37,9 @@ class ResetForm(forms.Form):
         except User.DoesNotExist:
             self.add_error('email', 'Email not exists')
 
-
+class UpdateChannelForm(forms.ModelForm):
+    class Meta:
+        model = Channel
+        fields = ['name', 'slug', 'description']
 
 
