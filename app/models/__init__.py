@@ -1,1 +1,1 @@
-from .entity import Token
+from .entity import Token, Channel

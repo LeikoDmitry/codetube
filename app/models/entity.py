@@ -11,3 +11,12 @@ class Token(models.Model):
         return self.value
 
 
+
+class Channel(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(max_length=255, unique=True)
+    description = models.TextField(null=True)
+    image_filename = models.CharField(max_length=255, null=True)
+    users = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now=True)

@@ -7,8 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
-from app.forms.form import UserRegistrationForm
-from app.models import Token
+from app.forms.form import UserRegistrationForm, ResetForm
+from app.models import Token, Channel
+import uuid
 
 
 class Auth:
@@ -17,7 +18,10 @@ class Auth:
     @staticmethod
     @login_required(login_url='/login')
     def index_action(request):
-        return render(request, 'app/index.html')
+        channel = Channel.objects.get(users=request.user)
+        return render(request, 'app/index.html', {
+            'channel': channel
+        })
 
     @staticmethod
     def login_action(request):
@@ -33,28 +37,41 @@ class Auth:
                     login(request, user_login)
                     return redirect('tube:index')
                 else:
+                    messages.error(request, message='Wrong password or email')
                     return redirect('tube:login')
             except User.DoesNotExist:
+                messages.error(request, message='Wrong password or email')
                 return redirect('tube:login')
 
     @staticmethod
     def register_action(request):
         if request.method != 'POST':
+            if 'form' in request.session:
+                form = request.session['form']
+                del request.session['form']
+            else:
+                form = ""
             return render(request, 'app/register.html', {
-                'error': messages.get_messages(request)
+                'form': form
             })
         else:
             form = UserRegistrationForm(request.POST)
             if not form.is_valid():
-                messages.error(request=request, message=form)
+                request.session['form'] = form.errors
                 return redirect('tube:register')
             else:
-                name = request.POST['username']
-                email = request.POST['email']
-                password = request.POST['password']
-                user_created = User.objects.create_user(username=name, email=email, password=password)
+                user_created = User.objects.create_user(
+                    username=form.cleaned_data['username'],
+                    email=form.cleaned_data['email'],
+                    password=form.cleaned_data['password'],
+                )
                 if user_created:
-                    user_login = authenticate(request, username=name, password=password)
+                    Channel.objects.create(
+                        name=form.cleaned_data['channel_name'],
+                        slug=uuid.uuid4().hex[:7],
+                        users=user_created
+                    )
+                    user_login = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
                     login(request, user_login)
                     return redirect('tube:index')
 
@@ -83,23 +100,35 @@ class Auth:
     @staticmethod
     def email_action(request):
         if request.method != 'POST':
-            return render(request, 'app/email.html')
+            if 'error' in request.session:
+                error = request.session['error']
+                del request.session['error']
+            else:
+                error = ""
+            return render(request, 'app/email.html', {
+                'error': error
+            })
         else:
             try:
                 email = request.POST['email']
-                user_reset = User.objects.get(email=email)
-                code = get_random_string(length=32)
-                Token.objects.create(value=code, user=user_reset)
-                subject, from_email, to = 'Reset password', 'admin@codetube', user_reset.email
-                html_content = render_to_string('app/reset_mail.html', {
-                    'email': user_reset.email,
-                    'url': 'http://' + request.get_host() + '/reset?code=' + code,
-                })
-                msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
-                msg.attach_alternative(html_content, "text/html")
-                msg.send()
-                messages.info(request, 'All information send you in email.')
-                return redirect('tube:login')
+                form = ResetForm(request.POST)
+                if not form.is_valid():
+                    request.session['error'] = form.errors
+                    return redirect('tube:email')
+                else:
+                    user_reset = User.objects.get(email=email)
+                    code = get_random_string(length=32)
+                    Token.objects.create(value=code, user=user_reset)
+                    subject, from_email, to = 'Reset password', 'admin@codetube', user_reset.email
+                    html_content = render_to_string('app/reset_mail.html', {
+                        'email': user_reset.email,
+                        'url': 'http://' + request.get_host() + '/reset?code=' + code,
+                    })
+                    msg = EmailMultiAlternatives(subject, html_content, from_email, [to])
+                    msg.attach_alternative(html_content, "text/html")
+                    msg.send()
+                    messages.info(request, 'All information send you in email.')
+                    return redirect('tube:login')
             except User.DoesNotExist:
                 return render(request, 'app/email.html')
 
@@ -108,7 +137,3 @@ class Auth:
         logout(request)
         return redirect('tube:login')
 
-
-class Channel:
-    """Channel classes actions"""
-    pass
