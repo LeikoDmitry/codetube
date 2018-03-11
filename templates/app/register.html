@@ -2,51 +2,81 @@
 {% block title %}Register page{% endblock %}
 {% block content %}
     <div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Register</div>
-                <div class="panel-body">
-                    <form class="form-horizontal" method="POST" action="{% url 'tube:register' %}">
-                        {% csrf_token %}
-                        <div class="form-group">
-                            <label for="name" class="col-md-4 control-label">Name</label>
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control" name="username" value="" required autofocus>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Register</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" method="POST" action="{% url 'tube:register' %}">
+                            {% csrf_token %}
+                            <div class="form-group {% if form.username %}has-error{% endif %}">
+                                <label for="name" class="col-md-4 control-label">Name</label>
+                                <div class="col-md-6">
+                                    <input id="name" type="text" class="form-control" name="username" value="" required
+                                           autofocus>
+                                    {% if form.username %}
+                                        {% for error in form.username %}
+                                            <span class="help-block">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="" required>
+                            <div class="form-group {% if form.channel_name %}has-error{% endif %}">
+                                <label for="channel_name" class="col-md-4 control-label">Channel name</label>
+                                <div class="col-md-6">
+                                    <input id="name" type="text" class="form-control" name="channel_name" value="" required
+                                           autofocus>
+                                    {% if form.channel_name %}
+                                        {% for error in form.channel_name %}
+                                            <span class="help-block">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="password" class="col-md-4 control-label">Password</label>
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
+                            <div class="form-group {% if form.email %}has-error{% endif %}">
+                                <label for="email" class="col-md-4 control-label">E-Mail Address</label>
+                                <div class="col-md-6">
+                                    <input id="email" type="email" class="form-control" name="email" value="" required>
+                                     {% if form.email %}
+                                        {% for error in form.email %}
+                                            <span class="help-block">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
 
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                            <div class="form-group {% if form.password %}has-error{% endif %}">
+                                <label for="password" class="col-md-4 control-label">Password</label>
+                                <div class="col-md-6">
+                                    <input id="password" type="password" class="form-control" name="password" required>
+                                     {% if form.password %}
+                                        {% for error in form.password %}
+                                            <span class="help-block">{{ error }}</span>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Register
-                                </button>
+                            <div class="form-group">
+                                <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
+
+                                <div class="col-md-6">
+                                    <input id="password-confirm" type="password" class="form-control"
+                                           name="password_confirmation" required>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        Register
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
