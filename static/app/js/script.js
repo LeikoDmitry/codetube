@@ -1,13 +1,16 @@
 
-var data = {uploading: true,  UploadingComplete: false,  failed: false};
 Vue.component('video-container', {
-    template: "<input v-if='uploading' v-on:change='fileInputChange' type='file' name='video' id='video'><div>Form</div>",
+    template: "" +
+    "<div>" +
+        "<input v-if='!uploading' v-on:change='fileInputChange' type='file' name='video' id='video'/>" +
+        "<div v-if='uploading && !failed' id='form-video'>Form</div>" +
+    "</div>",
     data: function () {
-      return data;
+      return {uploading: false,  UploadingComplete: false,  failed: false};
     },
     methods: {
         fileInputChange: function () {
-            this.uploading = false;
+            this.uploading = true;
             this.failed = false;
         }
     }
