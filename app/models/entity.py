@@ -20,3 +20,10 @@ class Channel(models.Model):
     image_filename = models.CharField(max_length=255, null=True)
     users = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
+
+class UploadFile(models.Model):
+    file = models.ImageField()
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, null=True)
+
+    def get_file_name(self):
+        return self.file.name

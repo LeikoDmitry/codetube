@@ -7,7 +7,7 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Setting channel:</div>
                     <div class="panel-body">
-                        <form class="form-horizontal" method="POST" action="{% url 'tube:channel_edit' my_channel.slug %}">
+                        <form enctype="multipart/form-data" class="form-horizontal" method="POST" action="{% url 'tube:channel_edit' my_channel.slug %}">
                             {% csrf_token %}
                             <div class="form-group {% if error.name %}has-error{% endif %}">
                                 <label for="name" class="col-md-4 control-label">Name</label>
@@ -48,6 +48,12 @@
                                     {% endfor %}
                                 {% endif %}
                             </div>
+                             <div class="form-group">
+                                <label for="description" class="col-md-4 control-label">Image file</label>
+                                <div class="col-md-6">
+                                    <input type="file" name="file" id="file">
+                                </div>
+                             </div>
                             <div class="form-group">
                                 <div class="col-md-6 col-md-offset-4">
                                     <button type="submit" class="btn btn-primary">

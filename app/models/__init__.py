@@ -1,1 +1,1 @@
-from .entity import Token, Channel
+from .entity import Token, Channel, UploadFile

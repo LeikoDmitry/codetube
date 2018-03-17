@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import redirect, get_object_or_404
@@ -8,8 +9,11 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm
-from app.models import Token, Channel
+from app.models import Token, Channel, UploadFile
 import uuid
+import os
+import boto3
+
 
 
 class Auth:
@@ -65,7 +69,7 @@ class Auth:
                 if user_created:
                     Channel.objects.create(
                         name=form.cleaned_data['channel_name'],
-                        slug=uuid.uuid4().hex(),
+                        slug=uuid.uuid4().hex[:8],
                         users=user_created
                     )
                     user_login = authenticate(request, username=form.cleaned_data['username'], password=form.cleaned_data['password'])
@@ -159,6 +163,13 @@ class ChannelPages:
             my_channel = Channel.objects.get(users=request.user, slug=channel)
             form = UpdateChannelForm(request.POST, instance=my_channel)
             if form.is_valid():
+                if 'file' in request.FILES:
+                    upload_file = UploadFile(file=request.FILES['file'], channel=my_channel)
+                    upload_file.save()
+                    s3 = boto3.resource('s3')
+                    data = open(os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name()), 'rb')
+                    s3.Bucket('imagescodetube.com').put_object(Key='profile/' + upload_file.get_file_name(), Body=data)
+                    os.remove(os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name()))
                 form.save()
                 return redirect('tube:channel_setting', channel=my_channel.slug)
             else:

@@ -41,5 +41,3 @@ class UpdateChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
         fields = ['name', 'slug', 'description']
-
-
