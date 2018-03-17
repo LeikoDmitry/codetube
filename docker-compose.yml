@@ -19,7 +19,7 @@ services:
         #command: uwsgi --socket :8001 --module src.wsgi
         volumes:
             - .:/codetube
-            - .aws:/root/.aws
+            - .aws/:/root/.aws
         ports:
             - 8000:8000
             - 8001:8001
