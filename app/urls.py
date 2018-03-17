@@ -12,5 +12,6 @@ urlpatterns = [
     path('email', action.Auth.email_action, name='email'),
     path('logout', action.Auth.logout_action, name='logout'),
     path('channel/<channel>/setting', action.ChannelPages.setting_action, name='channel_setting'),
-    path('channel/<channel>/edit', action.ChannelPages.edit_action, name='channel_edit')
+    path('channel/<channel>/edit', action.ChannelPages.edit_action, name='channel_edit'),
+    path('upload', action.UploadVideo.index_action, name='upload_video')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

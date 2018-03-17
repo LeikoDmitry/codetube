@@ -13,6 +13,7 @@ from app.models import Token, Channel, UploadFile
 import uuid
 import os
 import boto3
+from PIL import Image
 
 
 
@@ -166,9 +167,14 @@ class ChannelPages:
                 if 'file' in request.FILES:
                     upload_file = UploadFile(file=request.FILES['file'], channel=my_channel)
                     upload_file.save()
+                    path = os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name())
+                    size = 40, 40
+                    im = Image.open(path)
+                    im.thumbnail(size)
+                    im.save(path, "PNG")
                     s3 = boto3.resource('s3')
-                    data = open(os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name()), 'rb')
-                    s3.Bucket('imagescodetube.com').put_object(Key='profile/' + upload_file.get_file_name(), Body=data)
+                    data = open(path, 'rb')
+                    s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + upload_file.get_file_name(), Body=data)
                     os.remove(os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name()))
                 form.save()
                 return redirect('tube:channel_setting', channel=my_channel.slug)
@@ -177,3 +183,12 @@ class ChannelPages:
                 return redirect('tube:channel_setting', channel=my_channel.slug)
         else:
             return redirect('tube:index')
+
+
+class UploadVideo:
+
+    @staticmethod
+    @login_required(login_url='/login')
+    def index_action(request):
+        return render(request, 'app/video_upload.html')
+
