@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+import os
 
 
 class Token(models.Model):
@@ -27,3 +28,7 @@ class UploadFile(models.Model):
 
     def get_file_name(self):
         return self.file.name
+
+    def get_file_extension(self):
+        name, extension = os.path.splitext(self.file.name)
+        return extension
