@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from django import forms
-from app.models import Channel
+from app.models import Channel, Video
 
 
 class UserRegistrationForm(forms.ModelForm):
@@ -41,3 +41,8 @@ class UpdateChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
         fields = ['name', 'slug', 'description']
+
+class VideoForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ['title', 'description', 'visibility', 'allow_comment', 'allow_votes']

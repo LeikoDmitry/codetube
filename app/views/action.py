@@ -8,12 +8,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
-from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm
-from app.models import Token, Channel, UploadFile
+from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm, VideoForm
+from app.models import Token, Channel, UploadFile, Video
 import uuid
 import os
 import boto3
 from PIL import Image
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -191,4 +193,53 @@ class UploadVideo:
     @login_required(login_url='/login')
     def index_action(request):
         return render(request, 'app/video_upload.html')
+
+    @staticmethod
+    @csrf_exempt
+    @login_required(login_url='/login')
+    def store(request):
+        if request.method != 'POST':
+            return JsonResponse({
+                'response': 'get'
+            })
+        channel = Channel.objects.get(users=request.user)
+        uid = uuid.uuid4().hex[:10]
+        Video.objects.create(
+            channel=channel,
+            uid=uid,
+            title=request.POST['title'],
+            description=request.POST['description'],
+            visibility=request.POST['visibility'],
+            video_filename=str(uid) + '.' + request.POST['extension']
+        )
+        return JsonResponse({
+            'uid': uid
+        })
+
+    @staticmethod
+    @csrf_exempt
+    @login_required(login_url='/login')
+    def update(request, video):
+        video_user = Video.objects.get(uid=video)
+        if video_user.channel.users_id == request.user.id:
+            form = VideoForm(request.POST, instance=video_user)
+            if form.is_valid():
+                form.save()
+                return JsonResponse({
+                    'uid': video
+                })
+        else:
+            return JsonResponse({
+                'uid': '0'
+            })
+
+    @staticmethod
+    @csrf_exempt
+    def store_file(request):
+        return JsonResponse({
+            'uid': request.user.id
+        })
+
+
+
 
