@@ -1,1 +1,1 @@
-from .entity import Token, Channel, UploadFile, Video
+from .entity import Token, Channel, UploadFile, Video, UploadVideoFile

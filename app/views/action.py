@@ -9,7 +9,7 @@ from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm, VideoForm
-from app.models import Token, Channel, UploadFile, Video
+from app.models import Token, Channel, UploadFile, Video, UploadVideoFile
 import uuid
 import os
 import boto3
@@ -236,6 +236,9 @@ class UploadVideo:
     @staticmethod
     @csrf_exempt
     def store_file(request):
+        my_channel = Channel.objects.get(users=request.user)
+        upload_video = UploadVideoFile(video=request.FILES['video'], channel=my_channel)
+        upload_video.save()
         return JsonResponse({
             'uid': request.user.id
         })
