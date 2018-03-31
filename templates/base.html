@@ -17,5 +17,13 @@
 <!-- Scripts -->
 <script src="{% static 'app/js/app.js' %}"></script>
 <script src="{% static 'app/js/script.js' %}"></script>
+<script>
+    window.codetube = {
+        user: {
+            auth: {% if user.is_authenticated %}true{% else %}false{% endif %},
+            id: {{ user.id }}
+        }
+    };
+</script>
 </body>
 </html>
