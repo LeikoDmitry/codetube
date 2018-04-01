@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm, VideoForm
@@ -225,9 +225,15 @@ class UploadVideo:
             form = VideoForm(request.POST, instance=video_user)
             if form.is_valid():
                 form.save()
-                return JsonResponse({
-                    'uid': video
-                })
+                if request.is_ajax():
+                    return JsonResponse({
+                        'uid': video
+                    })
+                else:
+                    return redirect('tube:video_edit', uid=video)
+            else:
+                return redirect('tube:video_edit', uid=video)
+
         else:
             return JsonResponse({
                 'uid': '0'
@@ -250,6 +256,30 @@ class UploadVideo:
         os.remove(os.path.join(settings.MEDIA_ROOT, file))
         response = JsonResponse({'uid': request.user.id})
         return response
+
+    @staticmethod
+    @login_required(login_url='/login')
+    def main_index(request):
+        try :
+            user = request.user
+            channel = Channel.objects.get(users=user)
+            videos_user = Video.objects.filter(channel=channel).order_by('created_at')
+        except Video.DoesNotExist:
+            videos_user = ''
+        return render(request, 'app/main_index.html', {
+            'videos': videos_user
+        })
+
+    @staticmethod
+    @login_required(login_url='/login')
+    def edit_video(request, uid):
+        try:
+            video = Video.objects.get(uid=uid)
+        except Video.DoesNotExist:
+            video = ''
+        return render(request, template_name='app/edit_video.html', context={
+            'video': video
+        })
 
 
 

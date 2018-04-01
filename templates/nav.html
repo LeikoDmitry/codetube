@@ -36,6 +36,7 @@
                         <ul class="dropdown-menu">
                             <li>
                                 <a href="#">Your channel</a>
+                                <a href="{% url 'tube:videos' %}">Your videos</a>
                                 <a href="{% url 'tube:channel_setting' channel.slug %}">Channel settings</a>
                                 <a href="{% url 'tube:logout' %}">Logout</a>
                             </li>

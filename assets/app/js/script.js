@@ -4,7 +4,7 @@ Vue.component('video-container', {
     "<div class='alert alert-success' v-if='showAlert'>Your video will be availible. <a href='/videos'>Go to your videos</a></div>" +
     "<input v-if='!uploading' v-on:change='fileInputChange' type='file' name='video' id='video'/>" +
     "<div v-if='uploading && !failed' id='form-video'><div class='form-group'><label for='title'>Title</label><input class='form-control' type='text' v-model='title'></div><div class='form-group'><label for='description'>Description</label><textarea class='form-control' v-model='description' id='description'></textarea></div><div class='form-group'><label for='visibility'>Visibility</label><select class='form-control' v-model='visibility'><option value='1'>Public</option><option value='2'>Unlisted</option><option value='3'>Private</option></select></div><span class='help-block pull-right'>{{ saveStatus }}</span><button @click.prevent='update' class='btn btn-default'>Save update</button></div>" +
-    "<div v-if='UploadingComplete' class='progress'><div id='progress-bar' class='progress-bar'></div></div>" +
+    "<div style='margin-top: 20px;' v-if='UploadingComplete' class='progress'><div id='progress-bar' class='progress-bar'></div></div>" +
     "</div>",
     data: function () {
         return {
@@ -69,12 +69,12 @@ Vue.component('video-container', {
                     },
                     timeout: 10000000,
                     onUploadProgress: function (progressEvent) {
-                        this.UploadingComplete = true;
                         var upload_process = Math.round((progressEvent.loaded / progressEvent.total) * 100);
                         var progressbar = document.getElementById('progress-bar') || "";
                         if (progressbar !== "") {
                              progressbar.style.width = upload_process + "%";
                         }
+                        this.UploadingComplete = true;
                     }.bind(this)
                 }
             ).then((response) => {

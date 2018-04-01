@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Upload videos{% endblock %}
+{% block content %}
+    <div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">Videos</div>
+                <div class="panel-body">
+                    {% if videos.count > 0 %}
+                        {% for video in videos %}
+                            <div class="well">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <a href="#">
+                                            <img src="{{ video.get_thumb }}" class="img-thumbnail img-responsive">
+                                        </a>
+                                    </div>
+                                    <div class="col-sm-9">
+                                        <a href="#">{{ video.title }}</a>
+                                        <div class="row">
+                                            <div class="col-sm-6">
+                                                <p class="text-muted">
+                                                      {% if video.processed is False %}
+                                                          <span>Processed: {{ video.processed_percent }} % </span>
+                                                     {% else %}
+                                                          <span>{{ video.created_at | date:"Y-m-d H:f" }}</span>
+                                                     {% endif %}
+                                                </p>
+                                                <form method="post" action="{% url 'tube:video_edit' uid=video.uid %}">
+                                                     {% csrf_token %}
+                                                    <button class="btn btn-default">Edit</button>
+                                                </form>
+                                            </div>
+                                            <div class="col-sm-6">
+                                                <p>{{ video.get_visibility_display | title }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>You have no videos</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
