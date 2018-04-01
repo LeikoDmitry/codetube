@@ -1,7 +1,7 @@
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import action
+from .views import action, view_classes
 
 app_name = 'tube'
 urlpatterns = [
@@ -16,5 +16,6 @@ urlpatterns = [
     path('upload', action.UploadVideo.index_action, name='upload_video'),
     path('video', action.UploadVideo.store, name='video'),
     path('video/<video>', action.UploadVideo.update, name='video_update'),
-    path('video/store/upload', action.UploadVideo.store_file, name='video_upload_store')
+    path('video/store/upload', action.UploadVideo.store_file, name='video_upload_store'),
+    path('webhook/encoding', view_classes.EncodingWebHook.as_view(), name='web_hook_encoding'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
