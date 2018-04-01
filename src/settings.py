@@ -141,3 +141,4 @@ EMAIL_PORT = '2525'
 
 S3_USER = 'codetube'
 S3_BUCKET = 'imagescodetube.com'
+S3_BUCKET_DROP = 'drop-video.codetube.com'

@@ -204,17 +204,17 @@ class UploadVideo:
             })
         channel = Channel.objects.get(users=request.user)
         uid = uuid.uuid4().hex[:10]
+        file_name = str(uid) + '.' + request.POST['extension']
         Video.objects.create(
             channel=channel,
             uid=uid,
             title=request.POST['title'],
             description=request.POST['description'],
             visibility=request.POST['visibility'],
-            video_filename=str(uid) + '.' + request.POST['extension']
+            video_filename=file_name
         )
-        return JsonResponse({
-            'uid': uid
-        })
+        response = JsonResponse({'uid': uid, 'file_name': file_name})
+        return response
 
     @staticmethod
     @csrf_exempt
@@ -235,13 +235,21 @@ class UploadVideo:
 
     @staticmethod
     @csrf_exempt
+    @login_required(login_url='/login')
     def store_file(request):
         my_channel = Channel.objects.get(users=request.user)
         upload_video = UploadVideoFile(video=request.FILES['video'], channel=my_channel)
         upload_video.save()
-        return JsonResponse({
-            'uid': request.user.id
-        })
+        file_video_name = os.path.join(settings.MEDIA_ROOT, upload_video.get_file_name())
+        file = upload_video.get_file_name()
+        data = open(file_video_name, 'rb')
+        s3 = boto3.resource('s3')
+        if 'file_uid' in request.POST:
+            uid_file = request.POST['file_uid']
+            s3.Bucket(settings.S3_BUCKET_DROP).put_object(Key=uid_file, Body=data)
+        os.remove(os.path.join(settings.MEDIA_ROOT, file))
+        response = JsonResponse({'uid': request.user.id})
+        return response
 
 
 

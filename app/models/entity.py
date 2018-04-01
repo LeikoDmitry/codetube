@@ -63,3 +63,6 @@ class Video(models.Model):
 class UploadVideoFile(models.Model):
     video = models.FileField()
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+
+    def get_file_name(self):
+        return self.video.name
