@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 import os
 
 
@@ -59,6 +60,12 @@ class Video(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_thumb(self):
+        if self.processed is False:
+            return settings.BUCKETS_URL['VIDEO'] + '/default.png'
+        else:
+            return settings.BUCKETS_URL['VIDEO'] + '/' + str(self.video_id) + '_1.jpg'
 
 class UploadVideoFile(models.Model):
     video = models.FileField()

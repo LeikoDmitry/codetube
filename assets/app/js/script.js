@@ -69,17 +69,12 @@ Vue.component('video-container', {
                     },
                     timeout: 10000000,
                     onUploadProgress: function (progressEvent) {
-                        this.UploadingComplete = true;
-                         window.onbeforeunload = function(e) {
-                           var dialogText = 'Are you sure want go away ?';
-                           e.returnValue = dialogText;
-                           return dialogText;
-                         };
                         var upload_process = Math.round((progressEvent.loaded / progressEvent.total) * 100);
                         var progressbar = document.getElementById('progress-bar') || "";
                         if (progressbar !== "") {
                              progressbar.style.width = upload_process + "%";
                         }
+                        this.UploadingComplete = true;
                     }.bind(this)
                 }
             ).then((response) => {
