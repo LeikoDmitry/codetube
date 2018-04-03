@@ -1,9 +1,9 @@
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, DetailView
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
-from app.models import Video
+from app.models import Video, UploadFile, Channel
 
 class EncodingWebHook(TemplateView):
 
@@ -57,3 +57,17 @@ class EncodingWebHook(TemplateView):
             return Video.objects.get(video_filename=name)
         except Video.DoesNotExist:
             return False
+
+
+class VideoShow(DetailView):
+    template_name = 'app/video_show.html'
+    model = Video
+    slug_field = 'uid'
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user.id
+        channel = Channel.objects.get(users=user)
+        context['image_channel'] = UploadFile.objects.get(channel=channel)
+        return context
+    def __str__(self):
+        return Video.title

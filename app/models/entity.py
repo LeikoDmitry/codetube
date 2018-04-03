@@ -25,16 +25,23 @@ class Channel(models.Model):
     def __str__(self):
         return self.name
 
+    def get_image(self):
+        return
+
 class UploadFile(models.Model):
     file = models.ImageField()
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, null=True)
 
     def get_file_name(self):
+        return settings.BUCKETS_URL['IMAGE'] + '/profile/' + str(self.file.name)
+
+    def get_file(self):
         return self.file.name
 
     def get_file_extension(self):
         name, extension = os.path.splitext(self.file.name)
         return extension
+
     def __str__(self):
         return self.file
 
