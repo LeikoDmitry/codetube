@@ -74,6 +74,12 @@ class Video(models.Model):
         else:
             return settings.BUCKETS_URL['VIDEO'] + '/' + str(self.video_id) + '_1.jpg'
 
+    def is_private(self):
+        return bool(str(self.visibility) == '3')
+
+    def get_stream_url(self):
+        return settings.BUCKETS_URL['VIDEO'] + '/' + str(self.video_id) + '.mp4'
+
 class UploadVideoFile(models.Model):
     video = models.FileField()
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)

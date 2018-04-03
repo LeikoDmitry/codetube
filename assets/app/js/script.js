@@ -93,7 +93,7 @@ Vue.component('video-container', {
 
 });
 
-const app = new Vue({
+var app = new Vue({
     el: '#app',
     data: window.codetube
 });
