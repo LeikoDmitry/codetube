@@ -24,18 +24,13 @@ class EncodingWebHook(TemplateView):
         try:
             if request.method == "POST":
                 method = request.POST['event'].lower()
-                if method == 'video-created':
-                    self.video_created(request)
                 if method == 'video-encoded':
                     self.video_encoded(request)
-                if method == 'encoding-progress':
+                elif method == 'encoding-progress':
                     self.video_progress(request)
             return redirect('tube:web_hook_encoding')
         except AttributeError:
             return redirect('tube:web_hook_encoding')
-
-    def video_created(self, request):
-        return False
 
     def video_encoded(self, request):
         if 'original_filename' in request.POST:
