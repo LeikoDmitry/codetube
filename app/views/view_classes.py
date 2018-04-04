@@ -67,7 +67,11 @@ class VideoShow(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.request.user.id
         channel = Channel.objects.get(users=user)
-        context['image_channel'] = UploadFile.objects.get(channel=channel)
+        try:
+            file = UploadFile.objects.get(channel=channel)
+        except UploadFile.DoesNotExist:
+            file = ''
+        context['image_channel'] = file
         return context
     def __str__(self):
         return Video.title
