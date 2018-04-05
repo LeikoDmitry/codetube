@@ -2,17 +2,45 @@
 {% block title %}Upload video{% endblock %}
 {% block content %}
     <div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Upload</div>
-                <div class="panel-body">
-                    {% verbatim vue %}
-                        <video-container></video-container>
-                    {% endverbatim vue %}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Upload</div>
+                    <div class="panel-body">
+                         <div class="form-group">
+                            <input onchange="" type="file" name="video" id="video"/>
+                        </div>
+                        <div id='form-video'>
+                            <div class='form-group'>
+                               <div id="alert-show" class='alert alert-success'>
+                                   Your video will be availible. <a href='/videos'>Go to your videos</a>
+                               </div>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar"></div>
+                                </div>
+                            </div>
+                            <div class='form-group'>
+                                <label for='title'>Title</label>
+                                <input class='form-control' type='text' id='title'>
+                            </div>
+                            <div class='form-group'>
+                                <label for='description'>Description</label>
+                                <textarea class='form-control' id='description'></textarea>
+                            </div>
+                            <div class='form-group'>
+                                <label for='visibility'>Visibility</label>
+                                <select class='form-control' id='visibility'>
+                                    <option value='1'>Public</option>
+                                    <option value='2'>Unlisted</option>
+                                    <option value='3'>Private</option>
+                                </select>
+                            </div>
+                            <span id="help-block" class='help-block pull-right'></span>
+                            <button onclick='' class='btn btn-default'>Save update</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}
