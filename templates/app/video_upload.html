@@ -8,7 +8,7 @@
                     <div class="panel-heading">Upload</div>
                     <div class="panel-body">
                          <div class="form-group">
-                            <input onchange="" type="file" name="video" id="video"/>
+                            <input onchange="app.fileUpload(this)" type="file" name="video" id="video"/>
                         </div>
                         <div id='form-video'>
                             <div class='form-group'>
@@ -30,13 +30,13 @@
                             <div class='form-group'>
                                 <label for='visibility'>Visibility</label>
                                 <select class='form-control' id='visibility'>
-                                    <option value='1'>Public</option>
+                                    <option selected value='1'>Public</option>
                                     <option value='2'>Unlisted</option>
                                     <option value='3'>Private</option>
                                 </select>
                             </div>
                             <span id="help-block" class='help-block pull-right'></span>
-                            <button onclick='' class='btn btn-default'>Save update</button>
+                            <button onclick='app.saveDataUpload()' class='btn btn-default'>Save update</button>
                         </div>
                     </div>
                 </div>

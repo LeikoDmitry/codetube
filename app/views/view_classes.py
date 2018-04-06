@@ -28,7 +28,7 @@ class EncodingWebHook(TemplateView):
                     self.video_encoded(request)
                 elif method == 'encoding-progress':
                     self.video_progress(request)
-            return redirect('tube:web_hook_encoding')
+            return render(request, self.template_name)
         except AttributeError:
             return redirect('tube:web_hook_encoding')
 

@@ -254,8 +254,9 @@ class UploadVideo:
             uid_file = request.POST['file_uid']
             s3.Bucket(settings.S3_BUCKET_DROP).put_object(Key=uid_file, Body=data)
         os.remove(os.path.join(settings.MEDIA_ROOT, file))
-        response = JsonResponse({'uid': request.user.id})
-        return response
+        return JsonResponse({
+            'uid': request.user.id
+        })
 
     @staticmethod
     @login_required(login_url='/login')
