@@ -169,15 +169,15 @@ class ChannelPages:
                 if 'file' in request.FILES:
                     upload_file = UploadFile(file=request.FILES['file'], channel=my_channel)
                     upload_file.save()
-                    path = os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name())
-                    size = 40, 40
+                    path = os.path.join(settings.MEDIA_ROOT, upload_file.get_file())
+                    size = 90, 90
                     im = Image.open(path)
                     im.thumbnail(size)
                     im.save(path, "PNG")
                     s3 = boto3.resource('s3')
                     data = open(path, 'rb')
-                    s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + upload_file.get_file_name(), Body=data)
-                    os.remove(os.path.join(settings.MEDIA_ROOT, upload_file.get_file_name()))
+                    s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + upload_file.get_file(), Body=data)
+                    os.remove(os.path.join(settings.MEDIA_ROOT, upload_file.get_file()))
                 form.save()
                 return redirect('tube:channel_setting', channel=my_channel.slug)
             else:
@@ -254,8 +254,9 @@ class UploadVideo:
             uid_file = request.POST['file_uid']
             s3.Bucket(settings.S3_BUCKET_DROP).put_object(Key=uid_file, Body=data)
         os.remove(os.path.join(settings.MEDIA_ROOT, file))
-        response = JsonResponse({'uid': request.user.id})
-        return response
+        return JsonResponse({
+            'uid': request.user.id
+        })
 
     @staticmethod
     @login_required(login_url='/login')
@@ -280,6 +281,18 @@ class UploadVideo:
         return render(request, template_name='app/edit_video.html', context={
             'video': video
         })
+
+    @staticmethod
+    @login_required(login_url='/login')
+    def delete_video(request, video):
+        if request.method == 'POST':
+            video_user = Video.objects.get(uid=video)
+            if video_user.channel.users_id == request.user.id:
+                video_user.delete()
+                return redirect('tube:videos')
+        else:
+            return redirect('tube:videos')
+
 
 
 

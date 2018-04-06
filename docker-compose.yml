@@ -34,6 +34,7 @@ services:
             - 80:80
         volumes:
             - .:/codetube
+            - ./data/nginx/log:/var/log/nginx
         depends_on:
             - python
 

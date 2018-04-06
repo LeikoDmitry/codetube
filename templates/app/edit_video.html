@@ -2,17 +2,79 @@
 {% block title %}Edit video{% endblock %}
 {% block content %}
     <div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Edit video: {{ video.title }}</div>
-                <div class="panel-body">
-                    <form method="post" action="{% url 'tube:video_update' video=video.uid%}">
-                        <button class="btn btn-info">Update</button>
-                    </form>
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Edit video: {{ video.title }}</div>
+                    <div class="panel-body">
+                        <form class="form-horizontal" method="POST"
+                              action="{% url 'tube:video_update' video=video.uid %}">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <label for="title" class="col-md-4 control-label">Title</label>
+
+                                <div class="col-md-6">
+                                    <input id="title" type="text" class="form-control" name="title"
+                                           value="{{ video.title }}" required autofocus>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="col-md-4 control-label">Description</label>
+
+                                <div class="col-md-6">
+                                    <textarea id="description" name="description"
+                                              class="form-control">{{ video.description }}</textarea>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="visibility" class="col-md-4 control-label">Visibility</label>
+                                <div class="col-md-6">
+                                    <select name="visibility" class="form-control" id="visibility">
+                                        <option {% if video.visibility == '1' %}selected{% endif %} value='1'>Public
+                                        </option>
+                                        <option {% if video.visibility == '2' %}selected{% endif %} value='2'>Unlisted
+                                        </option>
+                                        <option {% if video.visibility == '3' %}selected{% endif %} value='3'>Private
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="allow_votes" class="control-label form-check-label col-md-4">Allow
+                                    votes</label>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input {% if video.allow_votes == True %}checked{% endif %}
+                                               class="form-check-input" id="allow_votes" type="checkbox"
+                                               name="allow_votes" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="allow_comments" class="control-label form-check-label col-md-4">Allow
+                                    comments</label>
+                                <div class="col-md-6">
+                                    <div class="form-check">
+                                        <input {% if video.allow_comment == True %}checked{% endif %}
+                                               class="form-check-input" id="allow_comments" type="checkbox"
+                                               name="allow_comment" value="0">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-6 col-md-offset-4">
+                                    <button type="submit" class="btn btn-primary">
+                                        Update
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="{% url 'tube:videos' %}">Back</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

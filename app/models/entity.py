@@ -1,20 +1,30 @@
+import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
-import os
 
 
 class Token(models.Model):
+    """
+    Token generate for reset password
+    """
     id = models.AutoField(primary_key=True)
     value = models.CharField(max_length=255)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
+        """
+        Return name for admin panel
+        :return: string
+        """
         return self.value
 
 
 
 class Channel(models.Model):
+    """
+    Channel's user
+    """
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
@@ -23,19 +33,46 @@ class Channel(models.Model):
     created_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """
+        Return name for admin panel
+        :return: string
+        """
         return self.name
 
 class UploadFile(models.Model):
+    """
+    Uploading files for thumb channel
+    """
     file = models.ImageField()
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE, null=True)
 
     def get_file_name(self):
+        """
+        Return path image
+        :return: string
+        """
+        return settings.BUCKETS_URL['IMAGE'] + '/profile/' + str(self.file.name)
+
+    def get_file(self):
+        """
+        Return name image
+        :return: string
+        """
         return self.file.name
 
     def get_file_extension(self):
+        """
+        Return extension image
+        :return: string
+        """
         name, extension = os.path.splitext(self.file.name)
         return extension
+
     def __str__(self):
+        """
+        Get name for admin panel
+        :return: string
+        """
         return self.file
 
 class Video(models.Model):
@@ -66,6 +103,12 @@ class Video(models.Model):
             return settings.BUCKETS_URL['VIDEO'] + '/default.png'
         else:
             return settings.BUCKETS_URL['VIDEO'] + '/' + str(self.video_id) + '_1.jpg'
+
+    def is_private(self):
+        return bool(str(self.visibility) == '3')
+
+    def get_stream_url(self):
+        return settings.BUCKETS_URL['VIDEO'] + '/' + str(self.video_id) + '.mp4'
 
 class UploadVideoFile(models.Model):
     video = models.FileField()

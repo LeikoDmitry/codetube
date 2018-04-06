@@ -1,2 +1,2 @@
 # codetube
-Docker Django Apache
+Docker Django Nginx

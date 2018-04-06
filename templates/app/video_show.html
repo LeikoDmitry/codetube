@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}{{ video.title }}{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                {% if video.is_private == True and user.is_authenticated and video.channel.users.id == user.id %}
+                    <div class="alert alert-info">
+                        Your video is currently private only can see it.
+                    </div>
+                {% endif %}
+                {% if video.processed == True %}
+                    <video poster="{{ video.get_thumb }}" data-thumb-url="{{ video.get_thumb }}"
+                           data-video-url="{{ video.get_stream_url }}" data-video-uid="{{ video.uid }}"
+                           id="codetube-video" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+                           data-setup='{"fluid": true, "preload": "auto"}' controls preload="auto">
+                        <source src="{{ video.get_stream_url }}" type='video/mp4'>
+                    </video>
+                {% endif %}
+                {% if video.processed == False %}
+                    <div class="video-placeholder">
+                        <div class="video-placeholder__header">
+                            The video is processing. Come back a bit later.
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <h4>{{ video.title }}</h4>
+                        <div class="pull-right">
+                            video views
+                        </div>
+                        <div class="media">
+                            <div class="media-left">
+                                <a href="#">
+                                    <img src="{{ image_channel.get_file_name }}" alt="">
+                                </a>
+                            </div>
+                            <div class="media-body">
+                                <a href="#">{{ video.channel.name }}</a>
+                                <button class="btn btn-success">Subscribe</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% if video.description != 'null' %}
+                    <div class="panel panel-default">
+                        <div class="panel-body">
+                            {{ video.description }}
+                        </div>
+                    </div>
+                {% endif %}
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        {% if video.allow_comment is True %}
+                            Comment
+                        {% else %}
+                            <p>Comments are disabled for this video</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
