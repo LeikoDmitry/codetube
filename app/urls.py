@@ -18,6 +18,7 @@ urlpatterns = [
     path('video/<video>', action.UploadVideo.update, name='video_update'),
     path('video/<video>/delete', action.UploadVideo.delete_video, name='video_delete'),
     path('videos', action.UploadVideo.main_index, name='videos'),
+    path('videos/<video>/views', view_classes.VideoView.as_view(), name='videos_views'),
     path('videos/<uid>/edit', action.UploadVideo.edit_video, name='video_edit'),
     path('video/store/upload', action.UploadVideo.store_file, name='video_upload_store'),
     path('webhook/encoding', view_classes.EncodingWebHook.as_view(), name='web_hook_encoding'),
