@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}Search{% endblock %}
+{% block content %}
+    <div class="container">
+    <div class="row">
+        <div class="col-md-8 col-md-offset-2">
+            <div class="panel panel-default">
+                <div class="panel-heading">Search for "{{ q }}"</div>
+                <div class="panel-body">
+                    {% if channels %}
+                        <h4>Channels</h4>
+                        <div class="well">
+                            {% for channel in channels %}
+                                <div class="media">
+                                    <div class="media-left">
+                                        <a href="#">
+                                            <img src="{{ channel.get_image }}" src="" class="media-object">
+                                        </a>
+                                    </div>
+                                    <div class="media-body">
+                                        <a href="#" class="media-heading">{{ channel.name }}</a>
+                                        Subscription count
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if videos %}
+                        {% for video in videos %}
+                            <div class="well">
+                                {% include 'app/video_partial.html' with video=video %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No videos found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

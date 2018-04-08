@@ -5,6 +5,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from app.models import Video, UploadFile, Channel, VideoView as VideoViewModel
+from algoliasearch_django import raw_search
+
 
 class EncodingWebHook(TemplateView):
 
@@ -97,3 +99,19 @@ class VideoView(TemplateView):
             })
         else:
             return redirect('tube:videos')
+
+class Search(TemplateView):
+
+    template_name = 'app/search.html'
+
+    def get(self, request, *args, **kwargs):
+        query = request.GET['q']
+        if query == '':
+            return redirect('tube:index')
+        response = raw_search(Channel, query)
+        response_video = raw_search(Video, query)
+        return render(request, self.template_name, {
+            'q': query,
+            'channels': response['hits'],
+            'videos': response_video['hits'],
+        })

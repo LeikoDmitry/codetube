@@ -23,4 +23,5 @@ urlpatterns = [
     path('video/store/upload', action.UploadVideo.store_file, name='video_upload_store'),
     path('webhook/encoding', view_classes.EncodingWebHook.as_view(), name='web_hook_encoding'),
     path('videos/<slug>/detail', view_classes.VideoShow.as_view(), name='video_detail'),
+    path('search', view_classes.Search.as_view(), name='search'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -2,7 +2,7 @@ function createView() {
     let xhr = new XMLHttpRequest();
     let data = '';
     let form = new FormData();
-    xhr.open('POST', 'videos/' + this.uid + '/views', false);
+    xhr.open('POST', '/videos/' + uid + '/views', false);
     xhr.onreadystatechange = function () {
         if (xhr.readyState === 4) {
             if (xhr.status === 200) {

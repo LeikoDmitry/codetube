@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app',
+    'algoliasearch_django',
 ]
 
 MIDDLEWARE = [
@@ -146,4 +147,9 @@ S3_BUCKET_DROP = 'drop-video.codetube.com'
 BUCKETS_URL = {
     'VIDEO': 'https://s3.us-east-2.amazonaws.com/video.ready.codetube.com',
     'IMAGE': 'https://s3.us-east-2.amazonaws.com/imagescodetube.com',
+}
+
+ALGOLIA = {
+    'APPLICATION_ID': 'DKEIW6ZYX5',
+    'API_KEY': '9a4ff1eec343669b20dbf9e982126de6'
 }
