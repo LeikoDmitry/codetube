@@ -116,3 +116,22 @@ class UploadVideoFile(models.Model):
 
     def get_file_name(self):
         return self.video.name
+
+class VideoView(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    ip = models.CharField(null=True, max_length=255)
+    created_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.ip
+
+
+class LikeAble(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    like_able_id = models.IntegerField()
+    like_able_type = models.CharField(max_length=255)
+    create_at = models.DateTimeField(auto_now=True)
+

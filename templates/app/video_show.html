@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% block title %}{{ video.title }}{% endblock %}
 {% block content %}
     <div class="container">
@@ -28,7 +29,7 @@
                     <div class="panel-body">
                         <h4>{{ video.title }}</h4>
                         <div class="pull-right">
-                            video views
+                            {{ video.videoview_set.count }} views
                         </div>
                         <div class="media">
                             <div class="media-left">
@@ -62,4 +63,9 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block javascript %}
+    <script>let uid = "{{ uid }}"</script>
+    <script src="http://vjs.zencdn.net/6.6.3/video.js"></script>
+    <script src="{% static 'app/js/script_video.js' %}"></script>
 {% endblock %}

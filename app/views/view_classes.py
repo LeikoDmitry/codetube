@@ -1,9 +1,10 @@
 from django.views.generic import TemplateView, DetailView
 from django.shortcuts import render
+from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
-from app.models import Video, UploadFile, Channel
+from app.models import Video, UploadFile, Channel, VideoView as VideoViewModel
 
 class EncodingWebHook(TemplateView):
 
@@ -67,6 +68,32 @@ class VideoShow(DetailView):
         except UploadFile.DoesNotExist:
             file = ''
         context['image_channel'] = file
+        context['uid'] = self.get_object().uid
         return context
     def __str__(self):
         return Video.title
+
+class VideoView(TemplateView):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """
+        Create count views video
+        """
+        if request.is_ajax():
+            user = request.user
+            try :
+                video = Video.objects.get(uid=self.kwargs['video'])
+                ip = request.META.get('REMOTE_ADDR')
+                VideoViewModel.objects.create(user=user, video=video, ip=ip)
+                message = video.uid
+            except Video.DoesNotExist:
+                message = 'Does not exist'
+            return JsonResponse({
+                'response': message
+            })
+        else:
+            return redirect('tube:videos')
