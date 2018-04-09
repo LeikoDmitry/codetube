@@ -9,7 +9,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm, VideoForm
-from app.models import Token, Channel, UploadFile, Video, UploadVideoFile
+from app.models import Token, Channel, Video, UploadVideoFile
 import uuid
 import os
 import boto3
@@ -164,21 +164,20 @@ class ChannelPages:
     def edit_action(request, channel):
         if request.method == 'POST':
             my_channel = Channel.objects.get(users=request.user, slug=channel)
-            form = UpdateChannelForm(request.POST, instance=my_channel)
+            form = UpdateChannelForm(request.POST, request.FILES, instance=my_channel)
             if form.is_valid():
-                if 'file' in request.FILES:
-                    upload_file = UploadFile(file=request.FILES['file'], channel=my_channel)
-                    upload_file.save()
-                    path = os.path.join(settings.MEDIA_ROOT, upload_file.get_file())
+                form.save()
+                if 'file_name' in request.FILES:
+                    file = form.instance.file_name.name
+                    path = os.path.join(settings.MEDIA_ROOT, file)
                     size = 90, 90
                     im = Image.open(path)
                     im.thumbnail(size)
                     im.save(path, "PNG")
                     s3 = boto3.resource('s3')
                     data = open(path, 'rb')
-                    s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + upload_file.get_file(), Body=data)
-                    os.remove(os.path.join(settings.MEDIA_ROOT, upload_file.get_file()))
-                form.save()
+                    s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + file, Body=data)
+                    os.remove(os.path.join(settings.MEDIA_ROOT, file))
                 return redirect('tube:channel_setting', channel=my_channel.slug)
             else:
                 request.session['error'] = form.errors

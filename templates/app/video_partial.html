@@ -1,20 +1,21 @@
 <div class="row">
     <div class="col-sm-3">
-        <a href="#">
+        <a href="{% url 'tube:video_detail' slug=video.uid %}">
             <img src="{{ video.get_thumb }}" alt="" class="img-responsive">
         </a>
     </div>
     <div class="col-md-9">
-        <a href="#">{{ video.title }}</a>
+        <a href="{% url 'tube:video_detail' slug=video.uid %}">{{ video.title }}</a>
         {% if video.description %}
             <p>{{ video.description }}</p>
         {% else %}
             <p>No description</p>
         {% endif %}
         <ul class="list-inline">
-            <li><a href="#">Channel name</a></li>
-            <li>{{ video.created_at}}</li>
-            <li>video views</li>
+            <li><a href="#">{{ video.channel.name }}</a></li>
+            {% load humanize %}
+            <li>{{ video.created_at | naturaltime }}</li>
+            <li>{{ video.videoview_set.count }} views</li>
         </ul>
     </div>
 </div>

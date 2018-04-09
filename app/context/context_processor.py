@@ -1,6 +1,5 @@
 from app.models import Channel
 
-
 def index_context(request):
     context_data = dict()
     if request.user.is_authenticated:

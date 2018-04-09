@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from app.context.functions import get_file_path
 
 
 class Token(models.Model):
@@ -28,9 +29,33 @@ class Channel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
+    file_name = models.FileField(upload_to=get_file_path, null=True, blank=True,)
     description = models.TextField(blank=True, null=True)
     users = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
+
+    def get_file_name(self):
+        """
+        Return path image
+        :return: string
+        """
+        return settings.BUCKETS_URL['IMAGE'] + '/profile/' + str(self.file_name.name)
+
+    def get_file(self):
+        """
+        Return name image
+        :return: string
+        """
+        return self.file_name.name
+
+    def get_file_extension(self):
+        """
+        Return extension image
+        :return: string
+        """
+        name, extension = os.path.splitext(self.file_name.name)
+        return extension
+
 
     def __str__(self):
         """
@@ -38,42 +63,6 @@ class Channel(models.Model):
         :return: string
         """
         return self.name
-
-class UploadFile(models.Model):
-    """
-    Uploading files for thumb channel
-    """
-    file = models.ImageField()
-    channel = models.ForeignKey(Channel, on_delete=models.CASCADE, null=True)
-
-    def get_file_name(self):
-        """
-        Return path image
-        :return: string
-        """
-        return settings.BUCKETS_URL['IMAGE'] + '/profile/' + str(self.file.name)
-
-    def get_file(self):
-        """
-        Return name image
-        :return: string
-        """
-        return self.file.name
-
-    def get_file_extension(self):
-        """
-        Return extension image
-        :return: string
-        """
-        name, extension = os.path.splitext(self.file.name)
-        return extension
-
-    def __str__(self):
-        """
-        Get name for admin panel
-        :return: string
-        """
-        return self.file
 
 class Video(models.Model):
     id = models.AutoField(primary_key=True)
@@ -134,4 +123,3 @@ class LikeAble(models.Model):
     like_able_id = models.IntegerField()
     like_able_type = models.CharField(max_length=255)
     create_at = models.DateTimeField(auto_now=True)
-
