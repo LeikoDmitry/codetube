@@ -117,9 +117,9 @@ class Search(TemplateView):
         response = raw_search(Channel, query)
         response_video = raw_search(Video, query)
         for val in response['hits']:
-            ids_response.append(val['objectID'])
+            ids_response.append(val.get('objectID'))
         for val in response_video['hits']:
-            ids_response_videos.append(val['objectID'])
+            ids_response_videos.append(val.get('objectID'))
         if (len(ids_response)) > 0:
             channels = Channel.objects.filter(id__in=ids_response)
         else:
