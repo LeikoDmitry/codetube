@@ -1,3 +1,67 @@
+class Vote {
+    constructor() {
+        this.videoUid = document.getElementsByClassName('video__voting')[0].getAttribute('data-uid');
+        this.data = []
+    }
+
+    get_video_uid() {
+        return this.videoUid;
+    }
+
+    get_votes() {
+        let data = 'None';
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/videos/' + this.get_video_uid() + '/votes', false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    data = JSON.parse(xhr.responseText);
+                }
+            }
+        };
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+        this.data = data;
+    }
+
+    set_data() {
+        if (this.data) {
+            let up_element = document.getElementById('up');
+            let down_element = document.getElementById('down');
+            up_element.textContent = this.data.data.up;
+            down_element.textContent = this.data.data.down;
+            let elements = document.getElementsByClassName('video__voting-button');
+            for (let i = 0; i < elements.length; i++) {
+                if (elements[i].getAttribute('data-up') === this.data.data.user_vote) {
+                    elements[i].classList.add('video__voting-button--voted');
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    vote(type) {
+        if (this.data.data.user_vote === type) {
+            document.getElementById(type).textContent--;
+            this.deleleVote(type);
+        } else {
+            document.getElementById(type).textContent++;
+            this.createVote(type);
+        }
+    }
+
+    deleleVote(type) {
+        console.log('delete ' + type);
+    }
+
+    createVote(type) {
+        console.log('create ' + type);
+    }
+
+}
+
+
 function createView() {
     let xhr = new XMLHttpRequest();
     let data = '';
@@ -30,3 +94,7 @@ player.on('loadedmetadata', function () {
     }, 1000);
 
 });
+
+let vote = new Vote();
+vote.get_votes();
+vote.set_data();
