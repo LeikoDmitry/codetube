@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
-from app.models import Video, UploadFile, Channel, VideoView as VideoViewModel
+from app.models import Video, Channel, VideoView as VideoViewModel
 from algoliasearch_django import raw_search
 
 
@@ -63,20 +63,15 @@ class VideoShow(DetailView):
     slug_field = 'uid'
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user = self.request.user.id
-        channel = Channel.objects.get(users=user)
-        try:
-            file = UploadFile.objects.get(channel=channel)
-        except UploadFile.DoesNotExist:
-            file = ''
-        context['image_channel'] = file
         context['uid'] = self.get_object().uid
         return context
     def __str__(self):
         return Video.title
 
 class VideoView(TemplateView):
-
+    """
+    Add count views video
+    """
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
@@ -101,17 +96,40 @@ class VideoView(TemplateView):
             return redirect('tube:videos')
 
 class Search(TemplateView):
-
+    """
+    Search at website
+    """
     template_name = 'app/search.html'
 
     def get(self, request, *args, **kwargs):
+        """
+        Get method with params
+        :param request:
+        :param args:
+        :param kwargs:
+        :return:
+        """
         query = request.GET['q']
         if query == '':
             return redirect('tube:index')
+        ids_response = []
+        ids_response_videos = []
         response = raw_search(Channel, query)
         response_video = raw_search(Video, query)
+        for val in response['hits']:
+            ids_response.append(val.get('objectID'))
+        for val in response_video['hits']:
+            ids_response_videos.append(val.get('objectID'))
+        if (len(ids_response)) > 0:
+            channels = Channel.objects.filter(id__in=ids_response)
+        else:
+            channels = ''
+        if (len(ids_response_videos)) > 0:
+            videos = Video.objects.filter(id__in=ids_response_videos)
+        else:
+            videos = ''
         return render(request, self.template_name, {
             'q': query,
-            'channels': response['hits'],
-            'videos': response_video['hits'],
+            'channels': channels,
+            'videos': videos
         })

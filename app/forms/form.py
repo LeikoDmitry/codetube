@@ -40,7 +40,7 @@ class ResetForm(forms.Form):
 class UpdateChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
-        fields = ['name', 'slug', 'description']
+        fields = ['name', 'slug', 'description', 'file_name']
 
 class VideoForm(forms.ModelForm):
     class Meta:
