@@ -95,7 +95,7 @@ let player = videojs('codetube-video');
 
 player.on('loadedmetadata', function () {
     let duration = Math.round(player.duration());
-    if (!duration) {
+    if (! duration) {
         return false;
     }
     setInterval(function () {
