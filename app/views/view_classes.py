@@ -150,6 +150,10 @@ class VideoVoteShow(TemplateView):
                 self.response['down'] = video.vote_set.filter(type='down').count()
                 self.response['up']   = video.vote_set.filter(type='up').count()
                 self.response['can_vote'] = True
+            else:
+                self.response['down'] = video.vote_set.filter(type='down').count()
+                self.response['up'] = video.vote_set.filter(type='up').count()
+                self.response['can_vote'] = False
             if request.user.is_active:
                 try:
                     vote_from_user = video.vote_set.get(user=request.user)
@@ -176,17 +180,20 @@ class VideoVoteCreate(TemplateView):
             if user.is_active:
                 try:
                     video = Video.objects.get(uid=kwargs['uid'])
-                    try:
-                        vote = Vote.objects.get(user=user, video=video)
-                        vote.delete()
-                    except Vote.DoesNotExist:
-                        pass
-                    Vote.objects.create(
-                        type=request.POST['type'],
-                        user=user,
-                        video=video
-                    )
-                    message = True
+                    if video.allow_votes is True:
+                        try:
+                            vote = Vote.objects.get(user=user, video=video)
+                            vote.delete()
+                        except Vote.DoesNotExist:
+                            pass
+                        Vote.objects.create(
+                            type=request.POST['type'],
+                            user=user,
+                            video=video
+                        )
+                        message = True
+                    else:
+                        message = 'Can`t add vote'
                 except Video.DoesNotExist:
                     message = 'Video not exist'
             else:
@@ -209,12 +216,15 @@ class VideoVoteRemove(TemplateView):
             user = request.user
             if user.is_active:
                 video = Video.objects.get(uid=kwargs['uid'])
-                try:
-                    vote = Vote.objects.get(user=user, video=video)
-                    vote.delete()
-                    result = True
-                except Vote.DoesNotExist:
-                    result = False
+                if video.allow_votes is True:
+                    try:
+                        vote = Vote.objects.get(user=user, video=video)
+                        vote.delete()
+                        result = True
+                    except Vote.DoesNotExist:
+                        result = False
+                else:
+                    result = 'Vote is can`t remove'
             else:
                 result = 'You can not add your vote, need login or registration'
             return JsonResponse({
