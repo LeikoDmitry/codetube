@@ -34,6 +34,8 @@ class Vote {
             for (let i = 0; i < elements.length; i++) {
                 if (elements[i].getAttribute('data-up') === this.data.data.user_vote) {
                     elements[i].classList.add('video__voting-button--voted');
+                } else {
+                    elements[i].classList.remove('video__voting-button--voted');
                 }
             }
             return true;
@@ -43,20 +45,30 @@ class Vote {
 
     vote(type) {
         if (this.data.data.user_vote === type) {
-            document.getElementById(type).textContent--;
-            this.deleleVote(type);
+            this.deleleVote();
         } else {
-            document.getElementById(type).textContent++;
             this.createVote(type);
         }
     }
 
-    deleleVote(type) {
-        console.log('delete ' + type);
+    deleleVote() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/videos/' + this.get_video_uid() + '/votes/remove', false);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+        this.get_votes();
+        this.set_data();
     }
 
     createVote(type) {
-        console.log('create ' + type);
+        let form = new FormData();
+        form.append('type', type);
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', '/videos/' + this.get_video_uid() + '/votes/create', false);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(form);
+        this.get_votes();
+        this.set_data();
     }
 
 }

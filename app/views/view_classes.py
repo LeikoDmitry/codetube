@@ -150,7 +150,7 @@ class VideoVoteShow(TemplateView):
                 self.response['down'] = video.vote_set.filter(type='down').count()
                 self.response['up']   = video.vote_set.filter(type='up').count()
                 self.response['can_vote'] = True
-            if request.user:
+            if request.user.is_active:
                 try:
                     vote_from_user = video.vote_set.get(user=request.user)
                     self.response['user_vote'] = vote_from_user.type
@@ -167,21 +167,33 @@ class VideoVoteShow(TemplateView):
 class VideoVoteCreate(TemplateView):
 
     @method_decorator(csrf_exempt)
-    @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             user = request.user
-            vote = Vote.objects.get(user=user)
-            vote.delete()
-            Vote.objects.create(
-                type=request.POST['type'],
-                user=user,
-            )
+            if user.is_active:
+                try:
+                    video = Video.objects.get(uid=kwargs['uid'])
+                    try:
+                        vote = Vote.objects.get(user=user, video=video)
+                        vote.delete()
+                    except Vote.DoesNotExist:
+                        pass
+                    Vote.objects.create(
+                        type=request.POST['type'],
+                        user=user,
+                        video=video
+                    )
+                    message = True
+                except Video.DoesNotExist:
+                    message = 'Video not exist'
+            else:
+                message = 'You can not add your vote, need login or registration'
+
             return JsonResponse({
-                'response': True
+                'response': message
             })
         else:
             return redirect('tube:index')
@@ -189,18 +201,24 @@ class VideoVoteCreate(TemplateView):
 class VideoVoteRemove(TemplateView):
 
     @method_decorator(csrf_exempt)
-    @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             user = request.user
-            vote = Vote.objects.get(user=user)
-            vote.delete()
+            if user.is_active:
+                video = Video.objects.get(uid=kwargs['uid'])
+                try:
+                    vote = Vote.objects.get(user=user, video=video)
+                    vote.delete()
+                    result = True
+                except Vote.DoesNotExist:
+                    result = False
+            else:
+                result = 'You can not add your vote, need login or registration'
             return JsonResponse({
-                'response': True
+                'response': result
             })
-
         else:
             return redirect('tube:index')
