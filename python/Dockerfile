@@ -6,4 +6,5 @@ RUN apt-get update \
 RUN mkdir /codetube
 WORKDIR /codetube
 ADD requirements.txt /codetube/
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt

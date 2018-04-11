@@ -4,3 +4,5 @@ uwsgi
 boto3
 Pillow
 algoliasearch-django
+requests
+requests-html

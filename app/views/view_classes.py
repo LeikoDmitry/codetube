@@ -146,13 +146,11 @@ class VideoVoteShow(TemplateView):
     def get(self, request, *args, **kwargs):
         try :
             video = Video.objects.get(uid=self.kwargs['uid'])
+            self.response['down'] = video.vote_set.filter(type='down').count()
+            self.response['up'] = video.vote_set.filter(type='up').count()
             if video.allow_votes is True:
-                self.response['down'] = video.vote_set.filter(type='down').count()
-                self.response['up']   = video.vote_set.filter(type='up').count()
                 self.response['can_vote'] = True
             else:
-                self.response['down'] = video.vote_set.filter(type='down').count()
-                self.response['up'] = video.vote_set.filter(type='up').count()
                 self.response['can_vote'] = False
             if request.user.is_active:
                 try:
