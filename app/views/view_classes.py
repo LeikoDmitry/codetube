@@ -1,10 +1,11 @@
 from django.views.generic import TemplateView, DetailView
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
-from app.models import Video, Channel, VideoView as VideoViewModel
+from app.models import Video, Channel, VideoView as VideoViewModel, Vote
 from algoliasearch_django import raw_search
 
 
@@ -84,7 +85,7 @@ class VideoView(TemplateView):
             user = request.user
             try :
                 video = Video.objects.get(uid=self.kwargs['video'])
-                ip = request.META.get('REMOTE_ADDR')
+                ip = VideoViewModel.get_ip_user(request)
                 VideoViewModel.objects.create(user=user, video=video, ip=ip)
                 message = video.uid
             except Video.DoesNotExist:
@@ -133,3 +134,91 @@ class Search(TemplateView):
             'channels': channels,
             'videos': videos
         })
+
+class VideoVoteShow(TemplateView):
+
+    response = {
+        'up': None,
+        'down': None,
+        'can_vote': False,
+        'user_vote': None,
+    }
+    def get(self, request, *args, **kwargs):
+        try :
+            video = Video.objects.get(uid=self.kwargs['uid'])
+            if video.allow_votes is True:
+                self.response['down'] = video.vote_set.filter(type='down').count()
+                self.response['up']   = video.vote_set.filter(type='up').count()
+                self.response['can_vote'] = True
+            if request.user.is_active:
+                try:
+                    vote_from_user = video.vote_set.get(user=request.user)
+                    self.response['user_vote'] = vote_from_user.type
+                except Vote.DoesNotExist:
+                    self.response['user_vote'] = None
+        except Video.DoesNotExist:
+            self.response = {
+                'data': None
+            }
+        return JsonResponse({
+            'data': self.response
+        })
+
+class VideoVoteCreate(TemplateView):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            user = request.user
+            if user.is_active:
+                try:
+                    video = Video.objects.get(uid=kwargs['uid'])
+                    try:
+                        vote = Vote.objects.get(user=user, video=video)
+                        vote.delete()
+                    except Vote.DoesNotExist:
+                        pass
+                    Vote.objects.create(
+                        type=request.POST['type'],
+                        user=user,
+                        video=video
+                    )
+                    message = True
+                except Video.DoesNotExist:
+                    message = 'Video not exist'
+            else:
+                message = 'You can not add your vote, need login or registration'
+
+            return JsonResponse({
+                'response': message
+            })
+        else:
+            return redirect('tube:index')
+
+class VideoVoteRemove(TemplateView):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            user = request.user
+            if user.is_active:
+                video = Video.objects.get(uid=kwargs['uid'])
+                try:
+                    vote = Vote.objects.get(user=user, video=video)
+                    vote.delete()
+                    result = True
+                except Vote.DoesNotExist:
+                    result = False
+            else:
+                result = 'You can not add your vote, need login or registration'
+            return JsonResponse({
+                'response': result
+            })
+        else:
+            return redirect('tube:index')

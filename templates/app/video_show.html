@@ -29,7 +29,17 @@
                     <div class="panel-body">
                         <h4>{{ video.title }}</h4>
                         <div class="pull-right">
-                            {{ video.videoview_set.count }} views
+                            <div class="video__views">
+                                 {{ video.videoview_set.count }} views
+                            </div>
+                            <div class="video__voting" data-uid="{{ uid }}">
+                                <a href="#" data-up="up" class="video__voting-button" onclick="vote.vote('up'); return false;">
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                </a><span id="up"></span> &nbsp;
+                                 <a href="#" data-up="down" class="video__voting-button" onclick="vote.vote('down'); return false">
+                                    <span class="glyphicon glyphicon-thumbs-down"></span>
+                                </a><span id="down"></span>
+                            </div>
                         </div>
                         <div class="media">
                             <div class="media-left">

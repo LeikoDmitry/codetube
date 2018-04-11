@@ -116,6 +116,17 @@ class VideoView(models.Model):
     def __str__(self):
         return self.ip
 
+    @staticmethod
+    def get_ip_user(request):
+        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        if x_forwarded_for:
+            ip = x_forwarded_for.split(',')[-1].strip()
+        elif request.META.get('HTTP_X_REAL_IP'):
+            ip = request.META.get('HTTP_X_REAL_IP')
+        else:
+            ip = request.META.get('REMOTE_ADDR')
+        return ip
+
 
 class LikeAble(models.Model):
     id = models.AutoField(primary_key=True)
@@ -123,3 +134,13 @@ class LikeAble(models.Model):
     like_able_id = models.IntegerField()
     like_able_type = models.CharField(max_length=255)
     create_at = models.DateTimeField(auto_now=True)
+
+class Vote(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, null=True)
+    type = models.CharField(max_length=255, choices=(
+        ('1', 'up'),
+        ('2', 'down')
+    ))
+    created_at = models.DateTimeField(auto_now=True)

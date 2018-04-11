@@ -29,7 +29,7 @@
     window.codetube = {
         user: {
             auth: {% if user.is_authenticated %}true{% else %}false{% endif %},
-            id: {{ user.id }}
+            id: {% if user.is_authenticated %}{{ user.id }}{% else %}false{% endif %},
         }
     };
 </script>
