@@ -64,6 +64,9 @@ class Channel(models.Model):
         """
         return self.name
 
+
+
+
 class Video(models.Model):
     id = models.AutoField(primary_key=True)
     uid = models.CharField(max_length=255)
@@ -144,3 +147,14 @@ class Vote(models.Model):
         ('2', 'down')
     ))
     created_at = models.DateTimeField(auto_now=True)
+
+class Comment(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reply_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    body = models.TextField(blank=True)
+    create_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'Comments'

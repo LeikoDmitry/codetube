@@ -6,3 +6,6 @@ Pillow
 algoliasearch-django
 requests
 requests-html
+djangorestframework
+markdown
+django-filter
