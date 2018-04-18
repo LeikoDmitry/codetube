@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'app',
     'algoliasearch_django',
+    'rest_framework',
+
 ]
 
 MIDDLEWARE = [

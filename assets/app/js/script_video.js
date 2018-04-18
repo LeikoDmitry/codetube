@@ -73,6 +73,60 @@ class Vote {
 
 }
 
+class Comments {
+
+    constructor()
+    {
+        this.comment_block = document.getElementById('video-comments');
+        this.comment_block_count = document.getElementsByClassName('count-comment')[0];
+        this.content_comment = document.getElementById('content_comment');
+    }
+
+    get_comments() {
+        let comments = '';
+        let xhr = new XMLHttpRequest();
+        xhr.open('GET', '/videos/' + uid + '/comments', false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    comments = JSON.parse(xhr.responseText);
+                }
+            }
+        };
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+        this.set_data_comments(comments);
+    }
+
+    set_data_comments(array) {
+        if (array !== undefined) {
+            this.comment_block_count.textContent = array.length + ' comments';
+            let html = '';
+            for (let i = 0; i < array.length; i++) {
+                if (array[i].reply_id === null) {
+                    html +=
+                        '<div class="media-left">' +
+                            '<a href="#">' +
+                                '<img src="'+ array[i].image_channel +'" >' +
+                            '</a>'     +
+                        '</div>' +
+                        '<div class="media-body">' +
+                            '<a href="#">'+  array[i].video.channel.name  +'</a>' +
+                            '<p>' +  array[i].body +'</p>' +
+                            '<div class="media"></div>' +
+                        '</div>'
+                } else {
+
+                }
+            }
+            this.content_comment.innerHTML = html;
+            return true;
+        }
+        return false;
+    }
+
+}
+
 
 function createView() {
     let xhr = new XMLHttpRequest();
@@ -110,3 +164,6 @@ player.on('loadedmetadata', function () {
 let vote = new Vote();
 vote.get_votes();
 vote.set_data();
+
+let comments = new Comments();
+comments.get_comments();

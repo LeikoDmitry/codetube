@@ -64,7 +64,12 @@
                 <div class="panel panel-default">
                     <div class="panel-body">
                         {% if video.allow_comment is True %}
-                            Comment
+                            <div id="video-comments">
+                                <p class="count-comment"></p>
+                                <ul class="media-list">
+                                    <li id="content_comment" class="media"></li>
+                                </ul>
+                            </div>
                         {% else %}
                             <p>Comments are disabled for this video</p>
                         {% endif %}

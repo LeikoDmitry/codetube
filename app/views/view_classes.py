@@ -1,13 +1,15 @@
 from django.views.generic import TemplateView, DetailView
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
-from app.models import Video, Channel, VideoView as VideoViewModel, Vote
+from app.models import Video, Channel, VideoView as VideoViewModel, Vote, Comment
+from app.serializers.serializes_classes import CommentSerializer
 from algoliasearch_django import raw_search
-
+from rest_framework import generics
+from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 
 class EncodingWebHook(TemplateView):
 
@@ -230,3 +232,22 @@ class VideoVoteRemove(TemplateView):
             })
         else:
             return redirect('tube:index')
+
+
+class CommentViewList(generics.ListAPIView):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    renderer_classes = (JSONRenderer, )
+
+    def get_queryset(self):
+        uid = self.kwargs['uid']
+        try:
+            video = Video.objects.get(uid=uid)
+            try:
+                comments = Comment.objects.filter(video=video)
+            except Comment.DoesNotExist:
+                comments = ''
+            return comments
+        except Video.DoesNotExist:
+            return ''
+

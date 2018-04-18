@@ -29,7 +29,7 @@ class Channel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
-    file_name = models.FileField(upload_to=get_file_path, null=True, blank=True,)
+    file_name = models.FileField(upload_to=get_file_path, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     users = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
@@ -63,6 +63,9 @@ class Channel(models.Model):
         :return: string
         """
         return self.name
+
+
+
 
 class Video(models.Model):
     id = models.AutoField(primary_key=True)
@@ -144,3 +147,14 @@ class Vote(models.Model):
         ('2', 'down')
     ))
     created_at = models.DateTimeField(auto_now=True)
+
+class Comment(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    reply_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    body = models.TextField(blank=True)
+    create_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return 'Comments'
