@@ -251,4 +251,3 @@ class CommentViewList(generics.ListAPIView):
         except Video.DoesNotExist:
             return ''
 
-

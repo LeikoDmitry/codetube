@@ -29,7 +29,7 @@ class Channel(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
-    file_name = models.FileField(upload_to=get_file_path, null=True, blank=True,)
+    file_name = models.FileField(upload_to=get_file_path, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     users = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)

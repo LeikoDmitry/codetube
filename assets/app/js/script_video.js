@@ -107,7 +107,7 @@ class Comments {
                     html +=
                         '<div class="media-left">' +
                             '<a href="#">' +
-                                '<img src="'+ array[i].video.channel.file_name +'" >' +
+                                '<img src="'+ array[i].image_channel +'" >' +
                             '</a>'     +
                         '</div>' +
                         '<div class="media-body">' +
