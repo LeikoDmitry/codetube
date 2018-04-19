@@ -75,9 +75,7 @@ class Vote {
 
 class Comments {
 
-    constructor()
-    {
-        this.comment_block = document.getElementById('video-comments');
+    constructor() {
         this.comment_block_count = document.getElementsByClassName('count-comment')[0];
         this.content_comment = document.getElementById('content_comment');
     }
@@ -100,29 +98,41 @@ class Comments {
 
     set_data_comments(array) {
         if (array !== undefined) {
-            this.comment_block_count.textContent = array.length + ' comments';
-            let html = '';
-            for (let i = 0; i < array.length; i++) {
-                if (array[i].reply_id === null) {
-                    html +=
-                        '<div class="media-left">' +
-                            '<a href="#">' +
-                                '<img src="'+ array[i].image_channel +'" >' +
-                            '</a>'     +
-                        '</div>' +
-                        '<div class="media-body">' +
-                            '<a href="#">'+  array[i].video.channel.name  +'</a>' +
-                            '<p>' +  array[i].body +'</p>' +
-                            '<div class="media"></div>' +
-                        '</div>'
-                } else {
-
-                }
+            if (this.comment_block_count !== undefined) {
+                this.comment_block_count.textContent = array.length + ' comments';
+                this.content_comment.innerHTML = this.tree_comments(array, null);
+                return true;
             }
-            this.content_comment.innerHTML = html;
-            return true;
+
         }
         return false;
+    }
+
+    tree_comments(array, parent) {
+        let html = '';
+        for (let i = 0; i < array.length; i++) {
+            if (parent === null) {
+                html += '<li class="media">';
+            } else {
+                html += '<div class="media">';
+            }
+            if (array[i].reply_id === parent) {
+                html += '<div class="media-left">';
+                html += '<a href="#">' + '<img class="media-object" src="' + array[i].image_channel + '" >' + '</a>';
+                html += '</div>';
+                html += '<div class="media-body">';
+                html += '<a href="#">' + array[i].video.channel.name + '</a>';
+                html += '<p>' + array[i].body + '</p>';
+                html += this.tree_comments(array, array[i].id);
+                html += '</div>';
+            }
+            if (parent === null) {
+                html += '</li>';
+            } else {
+                html += '</div>';
+            }
+        }
+        return html;
     }
 
 }
@@ -149,7 +159,7 @@ let player = videojs('codetube-video');
 
 player.on('loadedmetadata', function () {
     let duration = Math.round(player.duration());
-    if (! duration) {
+    if (!duration) {
         return false;
     }
     setInterval(function () {

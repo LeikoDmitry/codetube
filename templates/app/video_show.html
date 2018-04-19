@@ -10,7 +10,14 @@
                         Your video is currently private only can see it.
                     </div>
                 {% endif %}
-                {% if video.processed == True %}
+                {% if video.processed == True and video.is_private == False %}
+                    <video poster="{{ video.get_thumb }}" data-thumb-url="{{ video.get_thumb }}"
+                           data-video-url="{{ video.get_stream_url }}" data-video-uid="{{ video.uid }}"
+                           id="codetube-video" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
+                           data-setup='{"fluid": true, "preload": "auto"}' controls preload="auto">
+                        <source src="{{ video.get_stream_url }}" type='video/mp4'>
+                    </video>
+                {% elif video.processed == True and video.is_private == True and user.is_authenticated %}
                     <video poster="{{ video.get_thumb }}" data-thumb-url="{{ video.get_thumb }}"
                            data-video-url="{{ video.get_stream_url }}" data-video-uid="{{ video.uid }}"
                            id="codetube-video" class="video-js vjs-default-skin vjs-big-play-centered vjs-16-9"
@@ -25,18 +32,27 @@
                         </div>
                     </div>
                 {% endif %}
+                 {% if video.processed == True and video.is_private == True and user.is_anonymous %}
+                    <div class="video-placeholder">
+                        <div class="video-placeholder__header">
+                            The video is private.
+                        </div>
+                    </div>
+                {% endif %}
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <h4>{{ video.title }}</h4>
                         <div class="pull-right">
                             <div class="video__views">
-                                 {{ video.videoview_set.count }} views
+                                {{ video.videoview_set.count }} views
                             </div>
                             <div class="video__voting" data-uid="{{ uid }}">
-                                <a href="#" data-up="up" class="video__voting-button" onclick="vote.vote('up'); return false;">
+                                <a href="#" data-up="up" class="video__voting-button"
+                                   onclick="vote.vote('up'); return false;">
                                     <span class="glyphicon glyphicon-thumbs-up"></span>
                                 </a><span id="up"></span> &nbsp;
-                                 <a href="#" data-up="down" class="video__voting-button" onclick="vote.vote('down'); return false">
+                                <a href="#" data-up="down" class="video__voting-button"
+                                   onclick="vote.vote('down'); return false">
                                     <span class="glyphicon glyphicon-thumbs-down"></span>
                                 </a><span id="down"></span>
                             </div>
@@ -66,9 +82,7 @@
                         {% if video.allow_comment is True %}
                             <div id="video-comments">
                                 <p class="count-comment"></p>
-                                <ul class="media-list">
-                                    <li id="content_comment" class="media"></li>
-                                </ul>
+                                <ul class="media-list" id="content_comment"></ul>
                             </div>
                         {% else %}
                             <p>Comments are disabled for this video</p>
