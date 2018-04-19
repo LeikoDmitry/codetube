@@ -21,7 +21,6 @@ class Token(models.Model):
         return self.value
 
 
-
 class Channel(models.Model):
     """
     Channel's user
@@ -56,15 +55,12 @@ class Channel(models.Model):
         name, extension = os.path.splitext(self.file_name.name)
         return extension
 
-
     def __str__(self):
         """
         Return name for admin panel
         :return: string
         """
         return self.name
-
-
 
 
 class Video(models.Model):
@@ -102,12 +98,14 @@ class Video(models.Model):
     def get_stream_url(self):
         return settings.BUCKETS_URL['VIDEO'] + '/' + str(self.video_id) + '.mp4'
 
+
 class UploadVideoFile(models.Model):
     video = models.FileField()
     channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
 
     def get_file_name(self):
         return self.video.name
+
 
 class VideoView(models.Model):
     id = models.AutoField(primary_key=True)
@@ -138,6 +136,7 @@ class LikeAble(models.Model):
     like_able_type = models.CharField(max_length=255)
     create_at = models.DateTimeField(auto_now=True)
 
+
 class Vote(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -147,6 +146,7 @@ class Vote(models.Model):
         ('2', 'down')
     ))
     created_at = models.DateTimeField(auto_now=True)
+
 
 class Comment(models.Model):
     id = models.AutoField(primary_key=True)
@@ -158,3 +158,10 @@ class Comment(models.Model):
 
     def __str__(self):
         return 'Comments'
+
+    def get_reply_id(self):
+        try:
+            return self.reply_id.id
+        except AttributeError:
+            return None
+
