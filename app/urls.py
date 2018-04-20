@@ -28,4 +28,5 @@ urlpatterns = [
     path('videos/<slug>/detail', view_classes.VideoShow.as_view(), name='video_detail'),
     path('search', view_classes.Search.as_view(), name='search'),
     path('videos/<uid>/comments', view_classes.CommentViewList.as_view(), name='videos_comments'),
+    path('videos/<uid>/comments/create', view_classes.CommentViewCreate.as_view(), name='videos_comments_create'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

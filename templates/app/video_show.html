@@ -82,6 +82,14 @@
                         {% if video.allow_comment is True %}
                             <div id="video-comments">
                                 <p class="count-comment"></p>
+                                {% if user.is_authenticated %}
+                                    <div class="video-comment clearfix">
+                                        <textarea id="video-comment" placeholder="Say something" class="form-control "></textarea>
+                                        <div class="pull-right">
+                                            <button onclick="comments.createVideoComment();" type="submit" class="btn btn-default video-comment__input">Post</button>
+                                        </div>
+                                    </div>
+                                {% endif %}
                                 <ul class="media-list" id="content_comment"></ul>
                             </div>
                         {% else %}

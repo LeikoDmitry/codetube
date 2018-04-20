@@ -78,6 +78,7 @@ class Comments {
     constructor() {
         this.comment_block_count = document.getElementsByClassName('count-comment')[0];
         this.content_comment = document.getElementById('content_comment');
+        this.comment_video = document.getElementById('video-comment');
     }
 
     get_comments() {
@@ -121,7 +122,7 @@ class Comments {
                 html += '<a href="#">' + '<img class="media-object" src="' + array[i].image_channel + '" >' + '</a>';
                 html += '</div>';
                 html += '<div class="media-body">';
-                html += '<a href="#">' + array[i].video.channel.name + '</a>';
+                html += '<a href="#">' + array[i].video.channel.name + '</a> ' + array[i].create_at;
                 html += '<p>' + array[i].body + '</p>';
                 html += this.tree_comments(array, array[i].id);
                 html += '</div>';
@@ -133,6 +134,11 @@ class Comments {
             }
         }
         return html;
+    }
+
+    createVideoComment()
+    {
+        console.log(this.comment_video.value);
     }
 
 }

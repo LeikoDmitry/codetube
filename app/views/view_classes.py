@@ -3,11 +3,12 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from app.models import Video, Channel, VideoView as VideoViewModel, Vote, Comment
 from app.serializers.serializes_classes import CommentSerializer
 from algoliasearch_django import raw_search
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
@@ -251,3 +252,23 @@ class CommentViewList(generics.ListAPIView):
         except Video.DoesNotExist:
             return ''
 
+class CommentViewCreate(generics.CreateAPIView):
+
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    renderer_classes = (JSONRenderer,)
+
+    @method_decorator(csrf_exempt)
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        uid = kwargs['uid']
+        video = Video.objects.get(uid=uid)
+        serializer = CommentSerializer(data=request.data, context={
+            'user': request.user,
+            'video': video
+        })
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
