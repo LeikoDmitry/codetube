@@ -2,7 +2,7 @@ version: '3'
 
 services:
     database:
-        image: mysql
+        image: mysql:latest
         ports:
             - 3306:3306
         volumes:
@@ -12,7 +12,7 @@ services:
             MYSQL_USER: dmitry
             MYSQL_PASSWORD: codetube
             MYSQL_DATABASE: codetube
-        command: mysqld --character-set-server=utf8 --collation-server=utf8_general_ci
+        command: mysqld --default_authentication_plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
     python:
         build: python
         command: python3 manage.py runserver 0.0.0.0:8000
@@ -31,10 +31,10 @@ services:
         links:
           - python
         ports:
-            - 80:80
+          - 80:80
         volumes:
-            - .:/codetube
-            - ./data/nginx/log:/var/log/nginx
+           - .:/codetube
+           - ./data/nginx/log:/var/log/nginx
         depends_on:
             - python
 

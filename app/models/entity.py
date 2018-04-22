@@ -153,7 +153,7 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     reply_id = models.ForeignKey('self', on_delete=models.CASCADE, null=True)
     video = models.ForeignKey(Video, on_delete=models.CASCADE)
-    body = models.TextField(blank=True)
+    body = models.TextField(null=False)
     create_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
@@ -165,3 +165,11 @@ class Comment(models.Model):
         except AttributeError:
             return None
 
+class Subscriptions(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    channel = models.ForeignKey(Channel, on_delete=models.CASCADE)
+    create_at = models.DateTimeField(auto_now=True)
+
+    def is_subscribed_to(self, channel_id):
+        return self.channel.objects.all(id=channel_id).count()

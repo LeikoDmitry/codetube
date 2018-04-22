@@ -156,3 +156,9 @@ ALGOLIA = {
     'APPLICATION_ID': 'DKEIW6ZYX5',
     'API_KEY': '9a4ff1eec343669b20dbf9e982126de6'
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
