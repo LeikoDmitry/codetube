@@ -79,6 +79,7 @@ class Comments {
         this.comment_block_count = document.getElementsByClassName('count-comment')[0];
         this.content_comment = document.getElementById('content_comment');
         this.comment_video = document.getElementById('video-comment');
+        this.xhr = new XMLHttpRequest();
     }
 
     get_comments() {
@@ -97,19 +98,42 @@ class Comments {
         this.set_data_comments(comments);
     }
 
-    set_data_comments(array) {
+     set_data_comments(array) {
         if (array !== undefined) {
             if (this.comment_block_count !== undefined) {
                 this.comment_block_count.textContent = array.length + ' comments';
                 this.content_comment.innerHTML = this.tree_comments(array, null);
-                return true;
+                return this;
             }
-
         }
         return false;
     }
 
-    tree_comments(array, parent) {
+    createVideoComment() {
+        let xhr = this.xhr;
+        let form = new FormData();
+
+        form.append('body', this.comment_video.value);
+        form.append('reply_id', null);
+        xhr.open('POST', '/videos/' + uid + '/comments/create', false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 201) {
+                     let comments_from_backend = JSON.parse(xhr.responseText);
+                     let cls = new Comments();
+                     cls.comment_block_count.textContent = comments_from_backend.length + ' comments';
+                     cls.set_data_comments(comments_from_backend);
+                }
+            }
+        };
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('X-CSRFToken', window.codetube.CSRF_TOKEN);
+        xhr.send(form);
+        this.comment_video.value = '';
+        return this;
+    }
+
+     tree_comments(array, parent) {
         let html = '';
         for (let i = 0; i < array.length; i++) {
             if (parent === null) {
@@ -118,12 +142,19 @@ class Comments {
                 html += '<div class="media">';
             }
             if (array[i].reply_id === parent) {
+                let comment_id = array[i].id;
                 html += '<div class="media-left">';
                 html += '<a href="#">' + '<img class="media-object" src="' + array[i].image_channel + '" >' + '</a>';
                 html += '</div>';
                 html += '<div class="media-body">';
-                html += '<a href="#">' + array[i].video.channel.name + '</a> ' + array[i].create_at;
+                html += '<a href="#">' + array[i].name_channel + '</a> ' + array[i].create_at;
                 html += '<p>' + array[i].body + '</p>';
+                html += '<div class="video-comment clear">' +
+                    '<textarea id="replay_body_' + comment_id + '" class="form-control"></textarea>' +
+                        '<div class="pull-right">' +
+                            '<button onclick="comments.createReply(' + comment_id + ');" class="btn btn-default video-comment__input">Reply</button>' +
+                        '</div>' +
+                    '</div>';
                 html += this.tree_comments(array, array[i].id);
                 html += '</div>';
             }
@@ -136,9 +167,29 @@ class Comments {
         return html;
     }
 
-    createVideoComment()
+    createReply(comment_id)
     {
-        console.log(this.comment_video.value);
+        let xhr = this.xhr;
+        let form = new FormData();
+        let bodyReply = document.getElementById('replay_body_' + comment_id);
+        form.append('body', bodyReply.value);
+        form.append('reply_id', comment_id);
+        xhr.open('POST', '/videos/' + uid + '/comments/create', false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 201) {
+                     let comments_from_backend = JSON.parse(xhr.responseText);
+                     let cls = new Comments();
+                     cls.comment_block_count.textContent = comments_from_backend.length + ' comments';
+                     cls.set_data_comments(comments_from_backend);
+                }
+            }
+        };
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.setRequestHeader('X-CSRFToken', window.codetube.CSRF_TOKEN);
+        xhr.send(form);
+        bodyReply.value = '';
+        return this;
     }
 
 }

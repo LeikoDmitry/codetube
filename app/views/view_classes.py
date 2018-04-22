@@ -3,7 +3,6 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect
 from app.models import Video, Channel, VideoView as VideoViewModel, Vote, Comment
 from app.serializers.serializes_classes import CommentSerializer
@@ -252,23 +251,41 @@ class CommentViewList(generics.ListAPIView):
         except Video.DoesNotExist:
             return ''
 
+
 class CommentViewCreate(generics.CreateAPIView):
 
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     renderer_classes = (JSONRenderer,)
-
-    @method_decorator(csrf_exempt)
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super().dispatch(*args, **kwargs)
-
     def post(self, request, *args, **kwargs):
         uid = kwargs['uid']
         video = Video.objects.get(uid=uid)
-        serializer = CommentSerializer(data=request.data, context={
-            'user': request.user,
-            'video': video
-        })
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        user = self.request.user
+        serializer = CommentSerializer(data=request.POST)
+        if serializer.is_valid():
+            if request.POST['reply_id'] == 'null':
+                serializer.save(user=user, video=video)
+            else:
+                serializer.save(user=user, video=video, reply_id=Comment.objects.get(id=request.POST['reply_id']))
+            queryset = self.get_queryset()
+            serializer = CommentSerializer(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChannelSubscribed(TemplateView):
+
+    def get(self, request, *args, **kwargs):
+        response = {
+            'count': Channel.objects.get(slug=kwargs['channel']).subscriptions_set.count(),
+            'user_subscribed': False,
+            'can_subscribe': False
+        }
+        if request.user.is_active:
+            response.update({
+                'user_subscribed': True, # check user subscibe or not
+                'can_subscribe': False # check user subscibe or not
+            })
+
+        return JsonResponse(response)

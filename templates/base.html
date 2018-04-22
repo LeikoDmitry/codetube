@@ -27,6 +27,7 @@
 <script src="{% static 'app/js/script.js' %}"></script>
 <script>
     window.codetube = {
+        CSRF_TOKEN: '{{ csrf_token }}',
         user: {
             auth: {% if user.is_authenticated %}true{% else %}false{% endif %},
             id: {% if user.is_authenticated %}{{ user.id }}{% else %}false{% endif %},
