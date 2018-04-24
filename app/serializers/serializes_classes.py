@@ -1,6 +1,6 @@
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from rest_framework import serializers
-from app.models.entity import Comment, Channel
+from app.models.entity import Comment
 
 
 class CommentSerializer(serializers.ModelSerializer):

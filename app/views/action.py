@@ -10,12 +10,12 @@ from django.template.loader import render_to_string
 from django.utils.crypto import get_random_string
 from app.forms.form import UserRegistrationForm, ResetForm, UpdateChannelForm, VideoForm
 from app.models import Token, Channel, Video, UploadVideoFile
-import uuid
-import os
-import boto3
 from PIL import Image
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import uuid
+import os
+import boto3
 
 
 
