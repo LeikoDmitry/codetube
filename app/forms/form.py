@@ -37,10 +37,12 @@ class ResetForm(forms.Form):
         except User.DoesNotExist:
             self.add_error('email', 'Email not exists')
 
+
 class UpdateChannelForm(forms.ModelForm):
     class Meta:
         model = Channel
         fields = ['name', 'slug', 'description', 'file_name']
+
 
 class VideoForm(forms.ModelForm):
     class Meta:

@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
-from app.models import Video, Channel, VideoView as VideoViewModel, Vote, Comment
+from django.core.exceptions import MultipleObjectsReturned
+from app.models import Video, Channel, VideoView as VideoViewModel, Vote, Comment, Subscriptions
 from app.serializers.serializes_classes import CommentSerializer
 from algoliasearch_django import raw_search
 from rest_framework import generics, status
@@ -277,15 +278,38 @@ class CommentViewCreate(generics.CreateAPIView):
 class ChannelSubscribed(TemplateView):
 
     def get(self, request, *args, **kwargs):
-        response = {
-            'count': Channel.objects.get(slug=kwargs['channel']).subscriptions_set.count(),
-            'user_subscribed': False,
-            'can_subscribe': False
-        }
-        if request.user.is_active:
-            response.update({
-                'user_subscribed': True, # check user subscibe or not
-                'can_subscribe': False # check user subscibe or not
-            })
+        channel = ''
+        try:
+            channel = Channel.objects.get(slug=kwargs['channel'])
+            count = channel.subscriptions_set.count()
+            response = {
+                'count': count,
+                'user_subscribed': False,
+                'can_subscribe': False
+            }
+        except Channel.DoesNotExist:
+            response = {
+                'count': False,
+                'user_subscribed': False,
+                'can_subscribe': False
+            }
 
+        if request.user.is_active:
+            try:
+                Subscriptions.objects.get(channel=channel, user=request.user)
+                response.update({
+                    'user_subscribed': True,
+                    'can_subscribe': False,
+                })
+            except Subscriptions.DoesNotExist:
+                response.update({
+                    'user_subscribed': False,
+                    'can_subscribe': True,
+                })
+            except MultipleObjectsReturned:
+                response.update({
+                    'user_subscribed': False,
+                    'can_subscribe': False,
+                    'error': 'Can"t be else add user'
+                })
         return JsonResponse(response)

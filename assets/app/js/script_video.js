@@ -194,6 +194,33 @@ class Comments {
 
 }
 
+class Subscibed
+{
+    constructor()
+    {
+        this.block_subsribed = document.getElementById('block__subscribe');
+    }
+
+    set_subscibed_user_information()
+    {
+        let xhr = new XMLHttpRequest();
+        let data = '';
+        let form = new FormData();
+        let name_channel = this.block_subsribed.getAttribute('data-slug-channel');
+        xhr.open('GET', '/subscription/' + name_channel, false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    data = JSON.parse(xhr.responseText);
+                    console.log(data);
+                }
+            }
+        };
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send(form);
+    }
+}
+
 
 function createView() {
     let xhr = new XMLHttpRequest();
@@ -234,3 +261,6 @@ vote.set_data();
 
 let comments = new Comments();
 comments.get_comments();
+
+let sub = new Subscibed();
+sub.set_subscibed_user_information();
