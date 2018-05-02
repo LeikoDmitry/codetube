@@ -98,7 +98,7 @@ class Comments {
         this.set_data_comments(comments);
     }
 
-     set_data_comments(array) {
+    set_data_comments(array) {
         if (array !== undefined) {
             if (this.comment_block_count !== undefined) {
                 this.comment_block_count.textContent = array.length + ' comments';
@@ -119,10 +119,10 @@ class Comments {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 201) {
-                     let comments_from_backend = JSON.parse(xhr.responseText);
-                     let cls = new Comments();
-                     cls.comment_block_count.textContent = comments_from_backend.length + ' comments';
-                     cls.set_data_comments(comments_from_backend);
+                    let comments_from_backend = JSON.parse(xhr.responseText);
+                    let cls = new Comments();
+                    cls.comment_block_count.textContent = comments_from_backend.length + ' comments';
+                    cls.set_data_comments(comments_from_backend);
                 }
             }
         };
@@ -133,7 +133,7 @@ class Comments {
         return this;
     }
 
-     tree_comments(array, parent) {
+    tree_comments(array, parent) {
         let html = '';
         for (let i = 0; i < array.length; i++) {
             if (parent === null) {
@@ -151,9 +151,9 @@ class Comments {
                 html += '<p>' + array[i].body + '</p>';
                 html += '<div class="video-comment clear">' +
                     '<textarea id="replay_body_' + comment_id + '" class="form-control"></textarea>' +
-                        '<div class="pull-right">' +
-                            '<button onclick="comments.createReply(' + comment_id + ');" class="btn btn-default video-comment__input">Reply</button>' +
-                        '</div>' +
+                    '<div class="pull-right">' +
+                    '<button onclick="comments.createReply(' + comment_id + ');" class="btn btn-default video-comment__input">Reply</button>' +
+                    '</div>' +
                     '</div>';
                 html += this.tree_comments(array, array[i].id);
                 html += '</div>';
@@ -167,8 +167,7 @@ class Comments {
         return html;
     }
 
-    createReply(comment_id)
-    {
+    createReply(comment_id) {
         let xhr = this.xhr;
         let form = new FormData();
         let bodyReply = document.getElementById('replay_body_' + comment_id);
@@ -178,10 +177,10 @@ class Comments {
         xhr.onreadystatechange = function () {
             if (xhr.readyState === 4) {
                 if (xhr.status === 201) {
-                     let comments_from_backend = JSON.parse(xhr.responseText);
-                     let cls = new Comments();
-                     cls.comment_block_count.textContent = comments_from_backend.length + ' comments';
-                     cls.set_data_comments(comments_from_backend);
+                    let comments_from_backend = JSON.parse(xhr.responseText);
+                    let cls = new Comments();
+                    cls.comment_block_count.textContent = comments_from_backend.length + ' comments';
+                    cls.set_data_comments(comments_from_backend);
                 }
             }
         };
@@ -194,15 +193,58 @@ class Comments {
 
 }
 
-class Subscibed
-{
-    constructor()
-    {
+class Subscibed {
+    constructor() {
         this.block_subsribed = document.getElementById('block__subscribe');
     }
 
-    set_subscibed_user_information()
-    {
+    subscribe_user() {
+        let xhr = new XMLHttpRequest();
+        let data = '';
+        let name_channel = this.block_subsribed.getAttribute('data-slug-channel');
+        xhr.open('GET', '/subscription/' + name_channel, false);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4) {
+                if (xhr.status === 200) {
+                    data = JSON.parse(xhr.responseText);
+                    if (data !== undefined) {
+                        console.log(data);
+                        let button = document.querySelector('#block__subscribe button');
+                        let span = document.querySelector('#block__subscribe span');
+                        if (data.user_subscribed === false && data.can_subscribe === true) {
+                            button.textContent = 'Unsubscribe';
+                            let ajax = new XMLHttpRequest();
+                            ajax.open('PUT', '/subscription/' + name_channel, false);
+                            ajax.onreadystatechange = function () {
+                                data = JSON.parse(ajax.responseText);
+                                if (data.response === true) {
+                                     span.textContent = data.count + ' ' + 'subscribers';
+                                }
+                            };
+                            ajax.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                            ajax.send();
+                        } else {
+                            button.textContent = 'Subscribe';
+                            let ajax = new XMLHttpRequest();
+                            ajax.open('DELETE', '/subscription/' + name_channel, false);
+                             ajax.onreadystatechange = function () {
+                                data = JSON.parse(ajax.responseText);
+                                 if (data.response === true) {
+                                     span.textContent = data.count + ' ' + 'subscribers';
+                                 }
+                            };
+                            ajax.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                            ajax.send();
+                        }
+                    }
+                }
+            }
+        };
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+        xhr.send();
+    }
+
+    set_subscibed_user_information() {
         let xhr = new XMLHttpRequest();
         let data = '';
         let form = new FormData();
@@ -212,7 +254,15 @@ class Subscibed
             if (xhr.readyState === 4) {
                 if (xhr.status === 200) {
                     data = JSON.parse(xhr.responseText);
-                    console.log(data);
+                    if (data !== undefined) {
+                        console.log(data);
+                        let span = document.querySelector('#block__subscribe span');
+                        span.textContent = data.count + ' ' + 'subscribers';
+                        if (data.user_subscribed === true && data.can_subscribe === false) {
+                            let button = document.querySelector('#block__subscribe button');
+                            button.textContent = 'Unsubscribe';
+                        }
+                    }
                 }
             }
         };

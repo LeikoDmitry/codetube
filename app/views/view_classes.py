@@ -277,6 +277,10 @@ class CommentViewCreate(generics.CreateAPIView):
 
 class ChannelSubscribed(TemplateView):
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
     def get(self, request, *args, **kwargs):
         channel = ''
         try:
@@ -312,4 +316,57 @@ class ChannelSubscribed(TemplateView):
                     'can_subscribe': False,
                     'error': 'Can"t be else add user'
                 })
+            except ValueError:
+                response.update({
+                    'user_subscribed': False,
+                    'can_subscribe': False,
+                    'error': 'No channel"s name'
+                })
         return JsonResponse(response)
+
+    def put(self, request, *args, **kwargs):
+
+        try:
+            channel = Channel.objects.get(slug=kwargs['channel'])
+            if request.user.is_active:
+                Subscriptions.objects.create(user=request.user, channel=channel)
+                return JsonResponse({
+                    'response': True,
+                    'count': channel.subscriptions_set.count()
+                })
+            else:
+                return JsonResponse({
+                    'response': 'Can"t subscribed, you must login or register',
+                    'count': False
+                })
+        except Channel.DoesNotExist:
+            return JsonResponse({
+                'response': False,
+                'count': False
+            })
+
+    def delete(self, request, *args, **kwargs):
+        try:
+            if request.user.is_active:
+                channel = Channel.objects.get(slug=kwargs['channel'])
+                subscribe_user = Subscriptions.objects.get(user=request.user, channel=channel)
+                subscribe_user.delete()
+                return JsonResponse({
+                    'response': True,
+                    'count': channel.subscriptions_set.count()
+                })
+            else:
+                return JsonResponse({
+                    'response': False,
+                    'count': False
+                })
+        except Channel.DoesNotExist:
+            return JsonResponse({
+                'response': False,
+                'count': False
+            })
+        except Subscriptions.DoesNotExist:
+            return JsonResponse({
+                'response': False,
+                'count': False
+            })
