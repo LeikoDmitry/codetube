@@ -13,13 +13,13 @@
                             {% for channel in channels %}
                                 <div class="media">
                                     <div class="media-left">
-                                        <a href="#">
+                                        <a href="{% url "tube:channel_index" channel.slug %}">
                                             <img src="{{ channel.get_file_name }}" alt="" class="media-object">
                                         </a>
                                     </div>
                                     <div class="media-body">
-                                        <a href="#" class="media-heading">{{ channel.name }}</a>
-                                        Subscription count
+                                        <a href="{% url "tube:channel_index" channel.slug %}" class="media-heading">{{ channel.name }}</a>
+                                        {{ channel.subscriptions_set.count }} subscribers
                                     </div>
                                 </div>
                             {% endfor %}

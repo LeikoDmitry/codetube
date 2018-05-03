@@ -25,7 +25,11 @@ class Auth:
     @staticmethod
     @login_required(login_url='/login')
     def index_action(request):
-        return render(request, 'app/index.html')
+        limit = 5
+        user_video = Channel.objects.get(users=request.user).video_set.all().filter(processed=True).order_by('-created_at')[:limit]
+        return render(request, 'app/index.html', {
+            'subscribtion_videos': user_video,
+        })
 
     @staticmethod
     def login_action(request):

@@ -370,3 +370,21 @@ class ChannelSubscribed(TemplateView):
                 'response': False,
                 'count': False
             })
+
+class ChannelPage(TemplateView):
+
+    template_name = 'app/channel_page.html'
+
+    def get(self, request, *args, **kwargs):
+        try:
+            channel = Channel.objects.get(slug=self.kwargs['channel'])
+            try:
+                videos = Video.objects.filter(channel=channel)[:5]
+            except Video.DoesNotExist:
+                videos = None
+            return render(request, self.template_name, {
+                'channel': channel,
+                'videos': videos,
+            })
+        except Channel.DoesNotExist:
+            return redirect('tube:index')
