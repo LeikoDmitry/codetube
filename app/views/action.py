@@ -151,41 +151,48 @@ class ChannelPages:
     @staticmethod
     @login_required(login_url='/login')
     def setting_action(request, channel):
-        my_channel = Channel.objects.get(users=request.user, slug=channel)
-        if 'error' in request.session:
-            error = request.session['error']
-            del request.session['error']
-        else:
-            error = ""
-        return render(request, 'app/channel_edit.html', {
-            'my_channel': my_channel,
-            'host': request.get_host(),
-            'error': error
-        })
+        try:
+            my_channel = Channel.objects.get(users=request.user, slug=channel)
+            if 'error' in request.session:
+                error = request.session['error']
+                del request.session['error']
+            else:
+                error = ""
+            return render(request, 'app/channel_edit.html', {
+                'my_channel': my_channel,
+                'host': request.get_host(),
+                'error': error
+            })
+        except Channel.DoesNotExist:
+            return redirect('tube:index')
 
     @staticmethod
     @login_required(login_url='/login')
     def edit_action(request, channel):
         if request.method == 'POST':
-            my_channel = Channel.objects.get(users=request.user, slug=channel)
-            form = UpdateChannelForm(request.POST, request.FILES, instance=my_channel)
-            if form.is_valid():
-                form.save()
-                if 'file_name' in request.FILES:
-                    file = form.instance.file_name.name
-                    path = os.path.join(settings.MEDIA_ROOT, file)
-                    size = 90, 90
-                    im = Image.open(path)
-                    im.thumbnail(size)
-                    im.save(path, "PNG")
-                    s3 = boto3.resource('s3')
-                    data = open(path, 'rb')
-                    s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + file, Body=data)
-                    os.remove(os.path.join(settings.MEDIA_ROOT, file))
-                return redirect('tube:channel_setting', channel=my_channel.slug)
-            else:
-                request.session['error'] = form.errors
-                return redirect('tube:channel_setting', channel=my_channel.slug)
+            try:
+                my_channel = Channel.objects.get(users=request.user, slug=channel)
+                form = UpdateChannelForm(request.POST, request.FILES, instance=my_channel)
+                if form.is_valid():
+                    form.save()
+                    if 'file_name' in request.FILES:
+                        file = form.instance.file_name.name
+                        path = os.path.join(settings.MEDIA_ROOT, file)
+                        size = 90, 90
+                        im = Image.open(path)
+                        im.thumbnail(size)
+                        im.save(path, "PNG")
+                        s3 = boto3.resource('s3')
+                        data = open(path, 'rb')
+                        s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + file, Body=data)
+                        os.remove(os.path.join(settings.MEDIA_ROOT, file))
+                    return redirect('tube:channel_setting', channel=my_channel.slug)
+                else:
+                    request.session['error'] = form.errors
+                    return redirect('tube:channel_setting', channel=my_channel.slug)
+            except Channel.DoesNotExist:
+                return redirect('tube:channel_setting', channel=channel)
+
         else:
             return redirect('tube:index')
 
@@ -223,19 +230,22 @@ class UploadVideo:
     @csrf_exempt
     @login_required(login_url='/login')
     def update(request, video):
-        video_user = Video.objects.get(uid=video)
-        if video_user.channel.users_id == request.user.id:
-            form = VideoForm(request.POST, instance=video_user)
-            if form.is_valid():
-                form.save()
-                if request.is_ajax():
-                    return JsonResponse({
-                        'uid': video
-                    })
+        try:
+            video_user = Video.objects.get(uid=video)
+            if video_user.channel.users_id == request.user.id:
+                form = VideoForm(request.POST, instance=video_user)
+                if form.is_valid():
+                    form.save()
+                    if request.is_ajax():
+                        return JsonResponse({
+                            'uid': video
+                        })
+                    else:
+                        return redirect('tube:video_edit', uid=video)
                 else:
                     return redirect('tube:video_edit', uid=video)
-            else:
-                return redirect('tube:video_edit', uid=video)
+        except Video.DoesNotExist:
+            return redirect('tube:index')
 
         else:
             return JsonResponse({

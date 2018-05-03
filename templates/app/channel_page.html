@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Page channel{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <div class="media">
+                            <div class="media-left">
+                                <img src="{{ channel.get_file_name }}" alt="{{ channel.name }}" class="media-object">
+                            </div>
+                            <div class="media-body">
+                                {{ channel.name }}
+                                <ul class="list-inline">
+                                    <li><span>{{ channel.subscriptions_set.count }}&nbsp;subscribers</span></li>
+                                </ul>
+                                {% if channel.description %}
+                                    <hr/>
+                                    <p>{{ channel.description }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel panel-default">
+                    <div class="panel-heading">Videos</div>
+                    <div class="panel-body">
+                        {% if videos %}
+                            {% for video in videos %}
+                                <div class="well">
+                                    {% include 'app/video_partial.html' with video=video %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p>{{ channel.name }} has no videos.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
