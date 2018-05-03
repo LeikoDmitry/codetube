@@ -59,14 +59,14 @@
                         </div>
                         <div class="media">
                             <div class="media-left">
-                                <a href="#">
+                                <a href="{% url "tube:channel_index" channel.slug %}">
                                     <img src="{{ video.channel.get_file_name }}" alt="">
                                 </a>
                             </div>
                             <div class="media-body">
-                                <a href="#">{{ video.channel.name }}</a>
+                                <a href="{% url "tube:channel_index" channel.slug %}">{{ video.channel.name }}</a>
                                 <div id="block__subscribe" data-slug-channel="{{ video.channel.slug }}">
-                                    <span>5 subscribers</span>&nbsp;<button class="btn btn-xs btn-info">Subscribe</button>
+                                    <span></span>&nbsp;<button onclick="sub.subscribe_user()" class="btn btn-xs btn-info">Subscribe</button>
                                 </div>
                             </div>
                         </div>

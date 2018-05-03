@@ -12,6 +12,7 @@ urlpatterns = [
     path('email', action.Auth.email_action, name='email'),
     path('logout', action.Auth.logout_action, name='logout'),
     path('channel/<channel>/setting', action.ChannelPages.setting_action, name='channel_setting'),
+    path('channel/<channel>', view_classes.ChannelPage.as_view(), name='channel_index'),
     path('channel/<channel>/edit', action.ChannelPages.edit_action, name='channel_edit'),
     path('upload', action.UploadVideo.index_action, name='upload_video'),
     path('video', action.UploadVideo.store, name='video'),
