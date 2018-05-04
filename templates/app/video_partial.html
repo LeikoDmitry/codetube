@@ -12,7 +12,7 @@
             <p>No description</p>
         {% endif %}
         <ul class="list-inline">
-            <li><a href="#">{{ video.channel.name }}</a></li>
+            <li><a href="{% url 'tube:channel_index' video.channel.slug %}">{{ video.channel.name }}</a></li>
             {% load humanize %}
             <li>{{ video.created_at | naturaltime }}</li>
             <li>{{ video.videoview_set.count }} views</li>
