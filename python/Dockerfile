@@ -1,7 +1,7 @@
 FROM python:3
 ENV PYTHONUNBUFFERED 1
 RUN apt-get update \
- && apt-get install -y git nano curl zlib1g-dev python3-dev libmysqlclient-dev
+ && apt-get install -y git nano curl zlib1g-dev python3-dev default-libmysqlclient-dev
 
 RUN mkdir /codetube
 WORKDIR /codetube

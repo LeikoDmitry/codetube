@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'app',
+    'app.apps.AppConfig',
     'algoliasearch_django',
     'rest_framework',
 

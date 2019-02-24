@@ -9,7 +9,7 @@ class UserRegistrationForm(forms.ModelForm):
         fields = ['username', 'email', 'password']
 
     password_confirmation = forms.CharField(max_length=255)
-    channel_name =  forms.CharField(max_length=255)
+    channel_name = forms.CharField(max_length=255)
 
     def clean(self):
         cleaned_data = super(UserRegistrationForm, self).clean()

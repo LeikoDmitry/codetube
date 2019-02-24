@@ -31,4 +31,6 @@ urlpatterns = [
     path('videos/<uid>/comments', view_classes.CommentViewList.as_view(), name='videos_comments'),
     path('videos/<uid>/comments/create', view_classes.CommentViewCreate.as_view(), name='videos_comments_create'),
     path('subscription/<channel>', view_classes.ChannelSubscribed.as_view(), name='channel_subscribe'),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

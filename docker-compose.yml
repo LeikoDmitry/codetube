@@ -15,11 +15,11 @@ services:
             MYSQL_DATABASE: codetube
     python:
         build: python
-        command: python3 manage.py runserver 0.0.0.0:8000
-        #command: uwsgi --socket :8001 --module src.wsgi
+        #command: python3 manage.py runserver 0.0.0.0:8000
+        command: uwsgi --ini uwsgi.ini
         volumes:
             - .:/codetube
-            - .aws/:/root/.aws
+            - ./aws/:/root/.aws
         ports:
             - 8000:8000
             - 8001:8001

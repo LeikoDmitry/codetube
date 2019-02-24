@@ -16,10 +16,10 @@ class CommentSerializer(serializers.ModelSerializer):
         depth = 2
 
     def get_image_channel(self, obj):
-       return obj.user.channel_set.get(users=obj.user.id).get_file_name()
+        return obj.user.channel_set.get(users=obj.user.id).get_file_name()
 
     def get_name_channel(self, obj):
-       return obj.user.channel_set.get(users=obj.user.id).name
+        return obj.user.channel_set.get(users=obj.user.id).name
 
     def get_reply_id(self, obj):
         return obj.get_reply_id()

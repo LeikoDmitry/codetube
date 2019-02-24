@@ -18,7 +18,6 @@ import os
 import boto3
 
 
-
 class Auth:
     """Auth classes action"""
 
@@ -274,7 +273,7 @@ class UploadVideo:
     @staticmethod
     @login_required(login_url='/login')
     def main_index(request):
-        try :
+        try:
             user = request.user
             channel = Channel.objects.get(users=user)
             videos_user = Video.objects.filter(channel=channel).order_by('created_at')

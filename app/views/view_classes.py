@@ -12,6 +12,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.renderers import JSONRenderer
 
+
 class EncodingWebHook(TemplateView):
 
     template_name = 'app/hook_encoding.html'
@@ -99,6 +100,7 @@ class VideoView(TemplateView):
         else:
             return redirect('tube:videos')
 
+
 class Search(TemplateView):
     """
     Search at website
@@ -138,6 +140,7 @@ class Search(TemplateView):
             'videos': videos
         })
 
+
 class VideoVoteShow(TemplateView):
 
     response = {
@@ -146,8 +149,9 @@ class VideoVoteShow(TemplateView):
         'can_vote': False,
         'user_vote': None,
     }
+
     def get(self, request, *args, **kwargs):
-        try :
+        try:
             video = Video.objects.get(uid=self.kwargs['uid'])
             self.response['down'] = video.vote_set.filter(type='down').count()
             self.response['up'] = video.vote_set.filter(type='up').count()
@@ -168,6 +172,7 @@ class VideoVoteShow(TemplateView):
         return JsonResponse({
             'data': self.response
         })
+
 
 class VideoVoteCreate(TemplateView):
 
@@ -258,6 +263,7 @@ class CommentViewCreate(generics.CreateAPIView):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     renderer_classes = (JSONRenderer,)
+
     def post(self, request, *args, **kwargs):
         uid = kwargs['uid']
         video = Video.objects.get(uid=uid)
@@ -370,6 +376,7 @@ class ChannelSubscribed(TemplateView):
                 'response': False,
                 'count': False
             })
+
 
 class ChannelPage(TemplateView):
 
