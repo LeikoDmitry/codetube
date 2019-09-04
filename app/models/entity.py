@@ -2,7 +2,7 @@ import os
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
-from app.context.functions import get_file_path
+from app.context.functions import get_file_path, get_url_from_bucket
 
 
 class Token(models.Model):
@@ -38,7 +38,9 @@ class Channel(models.Model):
         Return path image
         :return: string
         """
-        return settings.BUCKETS_URL['IMAGE'] + '/profile/' + str(self.file_name.name)
+        key = 'profile/' + str(self.file_name.name)
+        bucket = settings.S3_BUCKET_IMAGE
+        return get_url_from_bucket(key=key, bucket=bucket)
 
     def get_file(self):
         """

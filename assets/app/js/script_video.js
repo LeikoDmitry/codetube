@@ -1,6 +1,8 @@
 class Vote {
     constructor() {
-        this.videoUid = document.getElementsByClassName('video__voting')[0].getAttribute('data-uid');
+        if (document.getElementsByClassName('video__voting').length > 0) {
+             this.videoUid = document.getElementsByClassName('video__voting')[0].getAttribute('data-uid');
+        }
         this.data = []
     }
 
@@ -27,15 +29,17 @@ class Vote {
     set_data() {
         if (this.data) {
             let up_element = document.getElementById('up');
-            let down_element = document.getElementById('down');
-            up_element.textContent = this.data.data.up;
-            down_element.textContent = this.data.data.down;
-            let elements = document.getElementsByClassName('video__voting-button');
-            for (let i = 0; i < elements.length; i++) {
-                if (elements[i].getAttribute('data-up') === this.data.data.user_vote) {
-                    elements[i].classList.add('video__voting-button--voted');
-                } else {
-                    elements[i].classList.remove('video__voting-button--voted');
+            if (up_element) {
+                let down_element = document.getElementById('down');
+                up_element.textContent = this.data.data.up;
+                down_element.textContent = this.data.data.down;
+                let elements = document.getElementsByClassName('video__voting-button');
+                for (let i = 0; i < elements.length; i++) {
+                    if (elements[i].getAttribute('data-up') === this.data.data.user_vote) {
+                        elements[i].classList.add('video__voting-button--voted');
+                    } else {
+                        elements[i].classList.remove('video__voting-button--voted');
+                    }
                 }
             }
             return true;
@@ -85,17 +89,20 @@ class Comments {
     get_comments() {
         let comments = '';
         let xhr = new XMLHttpRequest();
-        xhr.open('GET', '/videos/' + uid + '/comments', false);
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4) {
-                if (xhr.status === 200) {
-                    comments = JSON.parse(xhr.responseText);
+        if (uid) {
+            xhr.open('GET', '/videos/' + uid + '/comments', false);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        comments = JSON.parse(xhr.responseText);
+                    }
                 }
-            }
-        };
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-        xhr.send();
-        this.set_data_comments(comments);
+            };
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send();
+            this.set_data_comments(comments);
+        }
+
     }
 
     set_data_comments(array) {
@@ -208,7 +215,6 @@ class Subscibed {
                 if (xhr.status === 200) {
                     data = JSON.parse(xhr.responseText);
                     if (data !== undefined) {
-                        console.log(data);
                         let button = document.querySelector('#block__subscribe button');
                         let span = document.querySelector('#block__subscribe span');
                         if (data.user_subscribed === false && data.can_subscribe === true) {
@@ -271,7 +277,6 @@ class Subscibed {
     }
 }
 
-
 function createView() {
     let xhr = new XMLHttpRequest();
     let data = '';
@@ -289,21 +294,23 @@ function createView() {
     return data;
 }
 
-let player = videojs('codetube-video');
+video_block = document.getElementById('codetube-video');
 
-player.on('loadedmetadata', function () {
-    let duration = Math.round(player.duration());
-    if (!duration) {
-        return false;
-    }
-    setInterval(function () {
-        let currentTime = Math.round(player.currentTime()) === Math.round((10 * duration) / 100);
-        if (currentTime) {
-            createView()
+if (video_block) {
+    let player = videojs('codetube-video');
+    player.on('loadedmetadata', function () {
+        let duration = Math.round(player.duration());
+        if (! duration) {
+            return false;
         }
-    }, 1000);
-
-});
+        setInterval(function () {
+            let currentTime = Math.round(player.currentTime()) === Math.round((10 * duration) / 100);
+            if (currentTime) {
+                createView()
+            }
+        }, 1000);
+    });
+}
 
 let vote = new Vote();
 vote.get_votes();
@@ -314,3 +321,11 @@ comments.get_comments();
 
 let sub = new Subscibed();
 sub.set_subscibed_user_information();
+
+let collection = document.getElementsByClassName('subscribe');
+console.log(collection);
+if (collection) {
+    collection[0].addEventListener('click', function () {
+        sub.subscribe_user()
+    });
+}

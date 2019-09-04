@@ -143,13 +143,13 @@ EMAIL_HOST_PASSWORD = 'abaa101e5c9e9d'
 EMAIL_PORT = '2525'
 
 
-S3_USER = 'codetube'
-S3_BUCKET = 'imagescodetube.com'
-S3_BUCKET_DROP = 'drop-video.codetube.com'
+S3_USER = 'Codetube'
+S3_BUCKET_IMAGE = 'imagescodetube'
+S3_BUCKET_VIDEO = 'videoscodetube'
 
 BUCKETS_URL = {
     'VIDEO': 'https://s3.us-east-2.amazonaws.com/video.ready.codetube.com',
-    'IMAGE': 'https://s3.us-east-2.amazonaws.com/imagescodetube.com',
+    'IMAGE': 'https://s3.us-east-2.amazonaws.com/imagescodetube',
 }
 
 ALGOLIA = {

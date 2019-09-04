@@ -41,9 +41,9 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                {% if channel %}
-                                    <a href="{% url "tube:channel_index" channel.slug %}">Your channel</a>
-                                    <a href="{% url 'tube:channel_setting' channel.slug %}">Channel settings</a>
+                                {% if user_channel %}
+                                    <a href="{% url "tube:channel_index" user_channel.slug %}">Your channel</a>
+                                    <a href="{% url 'tube:channel_setting' user_channel.slug %}">Channel settings</a>
                                     <a href="{% url 'tube:videos' %}">Your videos</a>
                                 {% endif %}
                                 <a href="{% url 'tube:logout' %}">Logout</a>

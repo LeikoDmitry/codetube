@@ -88,7 +88,7 @@ class VideoView(TemplateView):
         """
         if request.is_ajax():
             user = request.user
-            try :
+            try:
                 video = Video.objects.get(uid=self.kwargs['video'])
                 ip = VideoViewModel.get_ip_user(request)
                 VideoViewModel.objects.create(user=user, video=video, ip=ip)
@@ -211,6 +211,7 @@ class VideoVoteCreate(TemplateView):
             })
         else:
             return redirect('tube:index')
+
 
 class VideoVoteRemove(TemplateView):
 

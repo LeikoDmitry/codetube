@@ -6,7 +6,7 @@ def index_context(request):
     context_data = dict()
     if request.user.is_authenticated:
         try:
-            context_data['channel'] = Channel.objects.get(users=request.user)
+            context_data['user_channel'] = Channel.objects.get(users=request.user)
         except Channel.DoesNotExist:
-            context_data['channel'] = {}
+            context_data['user_channel'] = {}
     return context_data

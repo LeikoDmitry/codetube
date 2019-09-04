@@ -20,6 +20,9 @@
                                     <div class="media-body">
                                         <a href="{% url "tube:channel_index" channel.slug %}" class="media-heading">{{ channel.name }}</a>
                                         {{ channel.subscriptions_set.count }} subscribers
+                                        <div id="block__subscribe" data-slug-channel="{{ video.channel.slug }}">
+                                            <span></span>&nbsp;<button class="subscribe btn btn-xs btn-info">Subscribe</button>
+                                        </div>
                                     </div>
                                 </div>
                             {% endfor %}

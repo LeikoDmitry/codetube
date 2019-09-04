@@ -16,6 +16,7 @@ from django.views.decorators.csrf import csrf_exempt
 import uuid
 import os
 import boto3
+from botocore.exceptions import ClientError
 
 
 class Auth:
@@ -186,15 +187,17 @@ class ChannelPages:
                         im.save(path, "PNG")
                         s3 = boto3.resource('s3')
                         data = open(path, 'rb')
-                        s3.Bucket(settings.S3_BUCKET).put_object(Key='profile/' + file, Body=data)
-                        os.remove(os.path.join(settings.MEDIA_ROOT, file))
+                        try:
+                            s3.Bucket(settings.S3_BUCKET_IMAGE).put_object(Key='profile/' + file, Body=data)
+                            os.remove(os.path.join(settings.MEDIA_ROOT, file))
+                        except ClientError:
+                            os.remove(os.path.join(settings.MEDIA_ROOT, file))
                     return redirect('tube:channel_setting', channel=my_channel.slug)
                 else:
                     request.session['error'] = form.errors
                     return redirect('tube:channel_setting', channel=my_channel.slug)
             except Channel.DoesNotExist:
                 return redirect('tube:channel_setting', channel=channel)
-
         else:
             return redirect('tube:index')
 

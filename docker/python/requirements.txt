@@ -1,7 +1,7 @@
 Django
 mysqlclient
 uwsgi
-boto3
+boto3==1.9.221
 Pillow
 algoliasearch-django
 requests
