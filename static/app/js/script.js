@@ -106,6 +106,10 @@ class UploadListener {
         request.sendData(true);
     }
 
+    getMetaContent(name){
+        return document.getElementsByTagName('meta')[name].getAttribute('content');
+    }
+
 }
 
-let app = new UploadListener();
+new UploadListener();

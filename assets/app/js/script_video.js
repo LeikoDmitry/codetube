@@ -1,3 +1,4 @@
+
 class Vote {
     constructor() {
         if (document.getElementsByClassName('video__voting').length > 0) {

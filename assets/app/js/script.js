@@ -106,5 +106,4 @@ class UploadListener {
     }
 
 }
-
-let app = new UploadListener();
+new UploadListener();
