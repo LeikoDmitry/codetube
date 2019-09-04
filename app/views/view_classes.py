@@ -73,6 +73,7 @@ class VideoShow(DetailView):
     def __str__(self):
         return Video.title
 
+
 class VideoView(TemplateView):
     """
     Add count views video

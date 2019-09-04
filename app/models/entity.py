@@ -165,6 +165,7 @@ class Comment(models.Model):
         except AttributeError:
             return None
 
+
 class Subscriptions(models.Model):
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

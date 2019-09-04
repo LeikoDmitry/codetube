@@ -1,41 +1,46 @@
 version: '3'
 
 services:
-    database:
-        image: mysql:latest
-        ports:
-            - 3306:3306
-        volumes:
-            - ./data/mysql:/var/lib/mysql
-            - ./custom.cnf:/etc/mysql/conf.d/custom.cnf
-        environment:
-            MYSQL_ROOT_PASSWORD: codetube
-            MYSQL_USER: dmitry
-            MYSQL_PASSWORD: codetube
-            MYSQL_DATABASE: codetube
-    python:
-        build: python
-        #command: python3 manage.py runserver 0.0.0.0:8000
-        command: uwsgi --ini uwsgi.ini
-        volumes:
-            - .:/codetube
-            - ./aws/:/root/.aws
-        ports:
-            - 8000:8000
-            - 8001:8001
-        depends_on:
-            - database
+  database:
+    image: mysql:latest
+    command: --character-set-server=utf8 --collation-server=utf8_general_ci --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3306:3306
+    volumes:
+      - ./docker/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+  python:
+    build: ./docker/python
+    #command: python3 manage.py runserver 0.0.0.0:8000
+    command: uwsgi --ini uwsgi.ini
+    volumes:
+      - .:/codetube
+      - ./aws/:/root/.aws
+    environment:
+      NAME: ${MYSQL_DATABASE}
+      USER: ${MYSQL_USER}
+      PASSWORD: ${MYSQL_PASSWORD}
+      HOST: database
+    ports:
+      - 8000:8000
+      - 8001:8001
+    depends_on:
+      - database
 
-    nginx:
-        build: nginx
-        links:
-          - python
-        ports:
-          - 80:80
-        volumes:
-           - .:/codetube
-           - ./data/nginx/log:/var/log/nginx
-        depends_on:
-            - python
+  nginx:
+    build: ./docker/nginx
+    links:
+      - python
+    ports:
+      - 80:80
+    volumes:
+      - .:/codetube
+      - ./docker/nginx/log:/var/log/nginx
+    depends_on:
+      - python
 
 

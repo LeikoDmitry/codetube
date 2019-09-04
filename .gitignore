@@ -1,5 +1,8 @@
 .idea/
 *.pyc
-data/
 media
 app/migrations
+.env
+aws
+docker/mysql
+docker/nginx/log
