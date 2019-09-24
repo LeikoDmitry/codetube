@@ -1,7 +1,7 @@
 FROM nginx
 
 RUN apt-get update \
- && apt-get install -y git nano curl zlib1g-dev
+ && apt-get install -y zlib1g-dev
 
 COPY codetube.conf /etc/nginx/sites-available/
 
