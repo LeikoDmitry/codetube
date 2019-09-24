@@ -1,7 +1,7 @@
 .idea/
 *.pyc
 media
-app/migrations
+app/migrations/*.py
 .env
 aws
 docker/mysql

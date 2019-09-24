@@ -1,2 +1,5 @@
 # codetube
-Docker Django Nginx
+
+Python web Application
+
+Run: ` docker-compose up -d --build `
