@@ -1,3 +1,4 @@
+
 class AjaxRequest {
 
     constructor(params, url, method) {

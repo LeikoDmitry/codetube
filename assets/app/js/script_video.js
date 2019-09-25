@@ -234,7 +234,7 @@ class Subscibed {
                             button.textContent = 'Subscribe';
                             let ajax = new XMLHttpRequest();
                             ajax.open('DELETE', '/subscription/' + name_channel, false);
-                             ajax.onreadystatechange = function () {
+                            ajax.onreadystatechange = function () {
                                 data = JSON.parse(ajax.responseText);
                                  if (data.response === true) {
                                      span.textContent = data.count + ' ' + 'subscribers';
@@ -324,7 +324,6 @@ let sub = new Subscibed();
 sub.set_subscibed_user_information();
 
 let collection = document.getElementsByClassName('subscribe');
-console.log(collection);
 if (collection) {
     collection[0].addEventListener('click', function () {
         sub.subscribe_user()

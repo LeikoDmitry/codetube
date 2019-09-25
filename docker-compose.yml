@@ -43,4 +43,14 @@ services:
     depends_on:
       - python
 
+  node:
+    build: ./docker/node
+    volumes:
+      - .:/codetube
+    ports:
+      - 8080:8080
+    command: bash -c "if [ ! -d "app"  ]; then vue create app -d && cd app && yarn serve; else cd app && yarn serve; fi"
+
+
+
 
